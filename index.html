@@ -2,279 +2,664 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Quiz Remote Controller</title>
+
 <style>
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;min-height:100%;background:#111;color:#fff;font-family:Arial,sans-serif}
-body{display:flex;justify-content:center}
-#app{width:100%;max-width:560px;min-height:100vh;padding:14px;display:flex;align-items:center;justify-content:center}
-.screen{display:none;width:100%;text-align:center;align-items:center;flex-direction:column;gap:14px}.screen.active{display:flex}
-h1{margin:0;font-size:28px}.room{font-size:19px;opacity:.75}
-input{width:100%;max-width:400px;padding:17px;border:0;border-radius:14px;font-size:23px;text-align:center;outline:none}
-.enter{width:100%;max-width:400px;padding:17px;border-radius:14px;background:#2196f3;color:#fff;font-size:21px;font-weight:bold}
-.players{display:flex;gap:16px;justify-content:center;width:100%}.playerPick{width:145px;height:145px;border-radius:50%;background:#4caf50;color:#fff;font-size:19px;font-weight:bold}
-button{font-family:inherit;border:0;cursor:pointer}.playerPick:active,.buzzer:active,.answer:active{transform:scale(.96)}
-.buzzer{width:min(62vw,280px);height:min(62vw,280px);border-radius:50%;background:#4caf50;color:#fff;font-size:29px;font-weight:bold;box-shadow:0 10px 35px #0008}
-.buzzer:active{box-shadow:0 5px 20px #0008}
-.status{min-height:28px;font-size:19px;font-weight:bold}.attempt{font-size:16px;opacity:.8}
-.answers{width:100%;max-width:430px;display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0 auto}.answer{height:88px;border-radius:15px;color:#fff;font-size:38px;font-weight:bold;opacity:1!important;cursor:pointer}.a{background:#e53935}.b{background:#1e88e5}.c{background:#fbc02d;color:#111}.d{background:#8e24aa}.answer.selected{outline:6px solid #fff;outline-offset:-6px}
-.error{color:#ff8a80;min-height:24px;font-size:16px;font-weight:bold}.note{font-size:14px;opacity:.6;max-width:390px}.leave{padding:11px 22px;border-radius:10px;background:#444;color:#fff;font-size:15px}
-@media(max-height:700px){.buzzer{width:190px;height:190px}.answer{height:70px}.screen{gap:9px}#app{padding:8px}}
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
+
+body{
+  margin:0;
+  min-height:100vh;
+  background:#111;
+  color:white;
+  font-family:Arial,sans-serif;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  overflow:hidden;
+}
+
+#app{
+  width:100%;
+  max-width:600px;
+  min-height:100vh;
+  padding:25px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+}
+
+.screen{
+  width:100%;
+  display:none;
+  flex-direction:column;
+  align-items:center;
+  gap:20px;
+}
+
+.screen.active{
+  display:flex;
+}
+
+h1{
+  margin:0;
+  font-size:30px;
+}
+
+input{
+  width:100%;
+  max-width:400px;
+  padding:18px;
+  border:0;
+  border-radius:12px;
+  font-size:24px;
+  text-align:center;
+  outline:none;
+}
+
+.mainBtn{
+  width:100%;
+  max-width:400px;
+  padding:20px;
+  border:0;
+  border-radius:15px;
+  font-size:22px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.joinBtn{
+  background:#2196f3;
+  color:white;
+}
+
+.playerChoices{
+  display:flex;
+  gap:20px;
+  width:100%;
+  justify-content:center;
+}
+
+.playerSelect{
+  width:150px;
+  height:150px;
+  border-radius:50%;
+  border:0;
+  background:#4caf50;
+  color:white;
+  font-size:22px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.playerSelect:active{
+  transform:scale(.95);
+}
+
+#roomLabel{
+  font-size:22px;
+  opacity:.8;
+}
+
+#playerButton{
+  position:relative;
+  width:min(75vw,330px);
+  height:min(75vw,330px);
+  border-radius:50%;
+  border:0;
+  background:#4caf50;
+  color:white;
+  font-size:32px;
+  font-weight:bold;
+  cursor:pointer;
+  box-shadow:0 0 25px rgba(0,0,0,.5);
+}
+
+#playerButton.yellow{
+  background:#ffd600;
+  color:#111;
+  animation:blink .55s infinite;
+}
+
+#playerButton.red{
+  background:#e53935;
+  color:white;
+  cursor:not-allowed;
+}
+
+#playerButton.red::after{
+  content:"✕";
+  position:absolute;
+  font-size:150px;
+  line-height:1;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  opacity:.9;
+}
+
+@keyframes blink{
+  0%,100%{opacity:1}
+  50%{opacity:.25}
+}
+
+#status{
+  min-height:30px;
+  font-size:20px;
+  font-weight:bold;
+}
+
+.answerGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:15px;
+  width:100%;
+  max-width:400px;
+}
+
+.answer{
+  height:100px;
+  border:0;
+  border-radius:15px;
+  font-size:40px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.answer:active{
+  transform:scale(.95);
+}
+
+#a{background:#f44336;color:white}
+#b{background:#2196f3;color:white}
+#c{background:#ffc107;color:#111}
+#d{background:#9c27b0;color:white}
+
+.hidden{
+  display:none!important;
+}
+
+.smallBtn{
+  padding:12px 25px;
+  border:0;
+  border-radius:10px;
+  font-size:16px;
+  cursor:pointer;
+}
+
+.leaveBtn{
+  background:#555;
+  color:white;
+}
 </style>
 </head>
+
 <body>
+
 <div id="app">
-<section id="roomScreen" class="screen active">
-<h1>ENTER ROOM NUMBER</h1>
-<input id="roomInput" inputmode="numeric" maxlength="20" placeholder="Room Number" autocomplete="off">
-<button id="enterBtn" class="enter">ENTER ROOM</button>
-<div id="roomError" class="error"></div>
-<div class="note">Enter the same room number used by the host.</div>
-</section>
 
-<section id="playerScreen" class="screen">
-<h1>SELECT PLAYER</h1><div id="playerRoom" class="room"></div>
-<div class="players"><button id="p1" class="playerPick">PLAYER 1</button><button id="p2" class="playerPick">PLAYER 2</button></div>
-<div id="playerError" class="error"></div>
-</section>
+  <!-- ROOM SCREEN -->
+  <div id="roomScreen" class="screen active">
+    <h1>ENTER ROOM NUMBER</h1>
 
-<section id="gameScreen" class="screen">
-<div id="gameRoom" class="room"></div>
-<div id="attempt" class="attempt">ATTEMPT 1 OF 3</div>
+    <input
+      id="roomInput"
+      type="text"
+      inputmode="numeric"
+      maxlength="20"
+      placeholder="Room Number"
+    >
 
-<!-- BIG BUTTON IS ALWAYS ACTIVE -->
-<button id="buzzer" class="buzzer">BUZZ</button>
-<div id="status" class="status">ACTIVE</div>
+    <button class="mainBtn joinBtn" id="joinRoom">
+      ENTER ROOM
+    </button>
 
-<!-- ABCD ARE ALWAYS VISIBLE AND ACTIVE -->
-<div id="answers" class="answers">
-<button class="answer a" data-answer="A">A</button>
-<button class="answer b" data-answer="B">B</button>
-<button class="answer c" data-answer="C">C</button>
-<button class="answer d" data-answer="D">D</button>
+    <div id="roomError"></div>
+  </div>
+
+
+  <!-- PLAYER SCREEN -->
+  <div id="playerScreen" class="screen">
+
+    <h1>SELECT PLAYER</h1>
+
+    <div id="roomLabel"></div>
+
+    <div class="playerChoices">
+
+      <button class="playerSelect" id="player1">
+        PLAYER 1
+      </button>
+
+      <button class="playerSelect" id="player2">
+        PLAYER 2
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- BUZZER SCREEN -->
+  <div id="gameScreen" class="screen">
+
+    <div id="roomLabel2"></div>
+
+    <button id="playerButton">
+      PLAYER
+    </button>
+
+    <div id="status">
+      READY
+    </div>
+
+    <div id="answers" class="answerGrid hidden">
+
+      <button class="answer" id="a">A</button>
+      <button class="answer" id="b">B</button>
+      <button class="answer" id="c">C</button>
+      <button class="answer" id="d">D</button>
+
+    </div>
+
+    <button class="smallBtn leaveBtn" id="leaveRoom">
+      LEAVE ROOM
+    </button>
+
+  </div>
+
 </div>
 
-<button id="leaveBtn" class="leave">LEAVE ROOM</button>
-</section>
-</div>
 
+<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
 <script>
-/* =====================================================
-   SAME FIREBASE CONFIG AS HOST INDEX.HTML
-===================================================== */
-const firebaseConfig={
- apiKey:"AIzaSyAKzNpD9BeiT-eymm0e1l_U3p_dggPrbEk",
- authDomain:"jess-santi.firebaseapp.com",
- databaseURL:"https://jess-santi-default-rtdb.firebaseio.com/",
- projectId:"jess-santi",
- storageBucket:"jess-santi.firebasestorage.app",
- messagingSenderId:"457562056307",
- appId:"1:457562056307:web:1be6c76bc8bdb5bd0aac06",
- measurementId:"G-SKL83F1C8B"
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAKzNpD9BeiT-eymm0e1l_U3p_dggPrbEk",
+  authDomain: "jess-santi.firebaseapp.com",
+  databaseURL: "https://jess-santi-default-rtdb.firebaseio.com/",
+  projectId: "jess-santi",
+  storageBucket: "jess-santi.firebasestorage.app",
+  messagingSenderId: "457562056307",
+  appId: "1:457562056307:web:1be6c76bc8bdb5bd0aac06",
+  measurementId: "G-SKL83F1C8B"
 };
 
 firebase.initializeApp(firebaseConfig);
-const db=firebase.database();
 
-/* AUDIO */
-const firstSound=new Audio("sound.mp3");
-const lateSound=new Audio("better-luck-next-time.mp3");
-firstSound.preload="auto"; lateSound.preload="auto";
+const db = firebase.database();
 
-let room="",player="",roomRef=null,playerRef=null;
-let currentRound=1,currentAttempt=1,joined=false;
-let lastBuzzerKey=null,lastAnswerKey=null;
-let stateListeners=[];
+let roomNumber = "";
+let playerNumber = "";
+let roomRef = null;
+let playerRef = null;
+let roundRef = null;
 
-const $=id=>document.getElementById(id);
+const roomScreen = document.getElementById("roomScreen");
+const playerScreen = document.getElementById("playerScreen");
+const gameScreen = document.getElementById("gameScreen");
 
-function show(el){[$("roomScreen"),$("playerScreen"),$("gameScreen")].forEach(x=>x.classList.remove("active"));el.classList.add("active")}
-function sound(a){a.currentTime=0;a.play().catch(()=>{})}
-function setStatus(t){$("status").textContent=t}
-function activeUI(){
- $("answers").style.display="grid";
- document.querySelectorAll(".answer").forEach(b=>{b.disabled=false;b.style.opacity="1"});
- $("buzzer").disabled=false;
- $("buzzer").textContent=player==="player1"?"PLAYER 1 BUZZ":"PLAYER 2 BUZZ";
-}
-function clearSelection(){document.querySelectorAll(".answer").forEach(b=>b.classList.remove("selected"))}
+const roomInput = document.getElementById("roomInput");
+const roomError = document.getElementById("roomError");
 
-/* ROOM ENTRY */
-$("enterBtn").onclick=()=>{
- const value=$("roomInput").value.trim();
- if(!value){$("roomError").textContent="Enter a room number.";return}
- room=value;
- $("roomError").textContent="";
- $("playerRoom").textContent="ROOM "+room;
- show($("playerScreen"));
-};
-$("roomInput").addEventListener("keydown",e=>{if(e.key==="Enter")$("enterBtn").click()});
+const playerButton = document.getElementById("playerButton");
+const statusText = document.getElementById("status");
+const answers = document.getElementById("answers");
 
-/* PLAYER JOIN */
-async function choosePlayer(p){
- if(!room)return;
- player=p;
- $("playerError").textContent="";
- roomRef=db.ref("rooms/"+room);
- playerRef=roomRef.child("players/"+player);
- try{
-   const snap=await playerRef.once("value");
-   if(snap.exists()){
-     $("playerError").textContent=player.toUpperCase()+" is already connected.";
-     return;
-   }
-   await playerRef.set({connected:true,at:firebase.database.ServerValue.TIMESTAMP});
-   playerRef.onDisconnect().remove();
-   joined=true;
-   $("gameRoom").textContent="ROOM "+room+" • "+player.toUpperCase();
-   activeUI();
-   setStatus("ACTIVE");
-   show($("gameScreen"));
-   listenRoom();
- }catch(e){
-   console.error(e);
-   $("playerError").textContent="Firebase connection error: "+(e.message||e);
- }
-}
-$("p1").onclick=()=>choosePlayer("player1");
-$("p2").onclick=()=>choosePlayer("player2");
+function showScreen(screen){
+  roomScreen.classList.remove("active");
+  playerScreen.classList.remove("active");
+  gameScreen.classList.remove("active");
 
-/* =====================================================
-   FIREBASE LISTENERS
-   Compatible with host index.html:
-   rooms/{room}/round
-   rooms/{room}/state
-   rooms/{room}/buzzer
-   rooms/{room}/answer
-===================================================== */
-function listenRoom(){
- const stateRef=roomRef.child("state");
- const roundRef=roomRef.child("round");
- const buzzerRef=roomRef.child("buzzer");
- const answerRef=roomRef.child("answer");
-
- roundRef.on("value",snap=>{
-   const r=snap.val();
-   if(typeof r==="number"){
-     if(r!==currentRound){currentRound=r;currentAttempt=1;lastBuzzerKey=null;lastAnswerKey=null;clearSelection()}
-   }
-   activeUI();
- });
-
- stateRef.on("value",snap=>{
-   const s=snap.val()||{};
-   if(s.round!=null && Number(s.round)!==currentRound){
-     currentRound=Number(s.round);currentAttempt=Number(s.attempt)||1;lastBuzzerKey=null;lastAnswerKey=null;clearSelection();
-   }
-   currentAttempt=Number(s.attempt)||currentAttempt||1;
-   $("attempt").textContent="ATTEMPT "+currentAttempt+" OF 3";
-   /* NEVER show WAITING. The remote is always active. */
-   activeUI();
-   if(s.phase==="STEAL") setStatus("ACTIVE • STEAL");
-   else if(s.phase==="FINISHED") setStatus("ACTIVE • NEXT QUESTION");
-   else setStatus("ACTIVE");
- });
-
- buzzerRef.on("value",snap=>{
-   const d=snap.val();
-   if(!d)return;
-   if(Number(d.round)!==currentRound)return;
-   const key=JSON.stringify(d);
-   if(key===lastBuzzerKey)return;
-   lastBuzzerKey=key;
-   if(d.player===player){
-     sound(firstSound);
-     setStatus("YOU BUZZED FIRST");
-   }else{
-     sound(lateSound);
-     setStatus("TOO LATE");
-   }
-   activeUI();
- });
-
- answerRef.on("value",snap=>{
-   const d=snap.val();
-   if(!d)return;
-   if(Number(d.round)!==currentRound)return;
-   const key=JSON.stringify(d);
-   if(key===lastAnswerKey)return;
-   lastAnswerKey=key;
-   clearSelection();
-   const b=document.querySelector('.answer[data-answer="'+String(d.answer||"").toUpperCase()+'"]');
-   if(b)b.classList.add("selected");
-   setStatus("ANSWER: "+String(d.answer||"").toUpperCase());
-   activeUI();
- });
+  screen.classList.add("active");
 }
 
-/* =====================================================
-   BIG BUZZER
-   The host decides who actually won the buzzer using
-   Firebase transaction. The controller itself never
-   disables the button.
-===================================================== */
-$("buzzer").onclick=async()=>{
- if(!joined)return;
- activeUI();
- try{
-   const result=await roomRef.child("buzzer").transaction(v=>{
-     if(v===null){
-       return {player:player,round:currentRound,attempt:currentAttempt,at:firebase.database.ServerValue.TIMESTAMP};
-     }
-     return;
-   });
-   if(result.committed){
-     sound(firstSound);
-     setStatus("YOU BUZZED FIRST");
-   }else{
-     sound(lateSound);
-     setStatus("TOO LATE");
-   }
- }catch(e){
-   console.error(e);
-   setStatus("FIREBASE ERROR");
- }
+
+/* ENTER ROOM */
+
+document.getElementById("joinRoom").onclick = async () => {
+
+  const room = roomInput.value.trim();
+
+  if(!room){
+    roomError.textContent = "Enter a room number.";
+    return;
+  }
+
+  roomNumber = room;
+
+  roomRef = db.ref("rooms/" + roomNumber);
+
+  try{
+
+    const snapshot = await roomRef.once("value");
+
+    if(!snapshot.exists()){
+
+      await roomRef.set({
+        createdAt: firebase.database.ServerValue.TIMESTAMP,
+        round: 1,
+        buzzer: null,
+        players:{
+          player1:null,
+          player2:null
+        }
+      });
+
+    }
+
+    document.getElementById("roomLabel").textContent =
+      "ROOM " + roomNumber;
+
+    showScreen(playerScreen);
+
+  }catch(error){
+
+    console.error(error);
+
+    roomError.textContent =
+      "Firebase connection error.";
+
+  }
+
 };
 
-/* =====================================================
-   ABCD — ALWAYS ACTIVE
-===================================================== */
-document.querySelectorAll(".answer").forEach(button=>{
- button.disabled=false;
- button.onclick=async()=>{
-   if(!joined)return;
-   const answer=button.dataset.answer;
-   clearSelection();button.classList.add("selected");
-   try{
-     await roomRef.child("answer").set({
-       player:player,
-       round:currentRound,
-       attempt:currentAttempt,
-       answer:answer,
-       at:firebase.database.ServerValue.TIMESTAMP
-     });
-     setStatus("ANSWER SENT: "+answer);
-     activeUI();
-     button.classList.add("selected");
-   }catch(e){
-     console.error(e);
-     setStatus("FIREBASE ERROR");
-   }
- };
+
+/* SELECT PLAYER 1 */
+
+document.getElementById("player1").onclick = () => {
+  choosePlayer("player1");
+};
+
+
+/* SELECT PLAYER 2 */
+
+document.getElementById("player2").onclick = () => {
+  choosePlayer("player2");
+};
+
+
+async function choosePlayer(player){
+
+  playerNumber = player;
+
+  playerRef = roomRef.child("players/" + playerNumber);
+
+  try{
+
+    const result = await playerRef.transaction(current => {
+
+      if(current === null){
+
+        return {
+          connected:true,
+          joinedAt:firebase.database.ServerValue.TIMESTAMP
+        };
+
+      }
+
+      return;
+
+    });
+
+    if(!result.committed){
+
+      alert(
+        playerNumber.toUpperCase() +
+        " is already occupied."
+      );
+
+      return;
+
+    }
+
+    document.getElementById("roomLabel2").textContent =
+      "ROOM " + roomNumber;
+
+    playerButton.textContent =
+      playerNumber === "player1"
+      ? "PLAYER 1"
+      : "PLAYER 2";
+
+    showScreen(gameScreen);
+
+    listenToRound();
+
+  }catch(error){
+
+    console.error(error);
+
+    alert("Unable to join player slot.");
+
+  }
+
+}
+
+
+/* LISTEN FOR CURRENT ROUND */
+
+function listenToRound(){
+
+  roundRef = roomRef.child("round");
+
+  roundRef.on("value", snapshot => {
+
+    const round = snapshot.val() || 1;
+
+    resetLocalButton();
+
+  });
+
+}
+
+
+/* PLAYER BUZZER */
+
+playerButton.onclick = async () => {
+
+  if(playerButton.classList.contains("red")){
+    return;
+  }
+
+  if(playerButton.classList.contains("yellow")){
+    return;
+  }
+
+  const buzzerRef = roomRef.child("buzzer");
+
+  try{
+
+    const result = await buzzerRef.transaction(current => {
+
+      if(current === null){
+
+        return {
+          player:playerNumber,
+          time:firebase.database.ServerValue.TIMESTAMP
+        };
+
+      }
+
+      return;
+
+    });
+
+    if(result.committed){
+
+      const buzzer = result.snapshot.val();
+
+      if(
+        buzzer &&
+        buzzer.player === playerNumber
+      ){
+
+        setWinner();
+
+      }
+
+    }
+
+  }catch(error){
+
+    console.error(error);
+
+  }
+
+};
+
+
+/* WATCH BUZZER */
+
+function watchBuzzer(){
+
+  roomRef.child("buzzer").on("value", snapshot => {
+
+    const buzzer = snapshot.val();
+
+    if(!buzzer){
+
+      resetLocalButton();
+      return;
+
+    }
+
+    if(buzzer.player === playerNumber){
+
+      setWinner();
+
+    }else{
+
+      setLoser();
+
+    }
+
+  });
+
+}
+
+
+/* WINNER */
+
+function setWinner(){
+
+  playerButton.classList.remove("red");
+  playerButton.classList.add("yellow");
+
+  statusText.textContent =
+    "FIRST!";
+
+  answers.classList.remove("hidden");
+
+}
+
+
+/* LOSER */
+
+function setLoser(){
+
+  playerButton.classList.remove("yellow");
+  playerButton.classList.add("red");
+
+  statusText.textContent =
+    "TOO LATE!";
+
+  answers.classList.add("hidden");
+
+}
+
+
+/* RESET */
+
+function resetLocalButton(){
+
+  playerButton.classList.remove("yellow");
+  playerButton.classList.remove("red");
+
+  playerButton.style.background = "#4caf50";
+
+  statusText.textContent =
+    "READY";
+
+  answers.classList.add("hidden");
+
+}
+
+
+/* ANSWERS */
+
+["a","b","c","d"].forEach(letter => {
+
+  document.getElementById(letter).onclick = async () => {
+
+    const buzzer =
+      await roomRef.child("buzzer").once("value");
+
+    const data = buzzer.val();
+
+    if(!data) return;
+
+    if(data.player !== playerNumber) return;
+
+    await roomRef.child("answer").set({
+      player:playerNumber,
+      answer:letter.toUpperCase(),
+      time:firebase.database.ServerValue.TIMESTAMP
+    });
+
+    statusText.textContent =
+      "ANSWER: " + letter.toUpperCase();
+
+  };
+
 });
 
-/* LEAVE */
-$("leaveBtn").onclick=async()=>{
- try{if(playerRef)await playerRef.remove()}catch(e){}
- location.reload();
-};
-window.addEventListener("beforeunload",()=>{if(playerRef)playerRef.remove().catch(()=>{})});
 
-/* Keep controls active even after any Firebase update. */
-setInterval(()=>{if(joined)activeUI()},500);
+/* LEAVE */
+
+document.getElementById("leaveRoom").onclick = async () => {
+
+  if(playerRef){
+
+    await playerRef.remove();
+
+  }
+
+  if(roomRef){
+
+    roomRef.child("buzzer").remove();
+
+  }
+
+  location.reload();
+
+};
+
+
+/*
+  IMPORTANT:
+  Start listening to the buzzer after joining.
+*/
+
+const originalListenToRound = listenToRound;
+
+listenToRound = function(){
+
+  originalListenToRound();
+
+  watchBuzzer();
+
+};
+
 </script>
+
 </body>
 </html>
