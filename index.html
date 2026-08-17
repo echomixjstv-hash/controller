@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Quiz Player Controller</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;font-family:Arial,sans-serif;background:#101114;color:#fff}
+body{display:flex;justify-content:center;align-items:center;overflow:hidden}
+#app{width:100%;max-width:620px;height:100%;min-height:100dvh;padding:22px;display:flex;align-items:center;justify-content:center}
+.screen{width:100%;display:none;flex-direction:column;align-items:center;text-align:center;gap:18px}
+.screen.active{display:flex}
+h1{font-size:30px;margin:0 0 8px}
+.sub{opacity:.75;font-size:17px}
+input{width:100%;max-width:420px;padding:18px;border:0;border-radius:14px;font-size:24px;text-align:center;outline:0}
+button{font-family:inherit}
+.primary{width:100%;max-width:420px;padding:19px;border:0;border-radius:14px;background:#2196f3;color:#fff;font-size:21px;font-weight:700}
+.primary:active,.playerPick:active,.buzzer:active,.answer:active{transform:scale(.97)}
+.error{min-height:24px;color:#ff7777;font-weight:700}
+.playerRow{display:flex;gap:18px;width:100%;justify-content:center}
+.playerPick{width:150px;height:150px;border:0;border-radius:50%;background:#35b94a;color:#fff;font-size:20px;font-weight:800}
+.room{font-size:20px;font-weight:700;opacity:.8}
+.buzzer{position:relative;width:min(76vw,330px);height:min(76vw,330px);border:0;border-radius:50%;background:#35b94a;color:#fff;font-size:31px;font-weight:900;box-shadow:0 10px 35px #0008;touch-action:manipulation}
+.buzzer.yellow{background:#ffd600;color:#111;animation:blink .55s infinite}
+.buzzer.red{background:#e53935;color:#fff;cursor:not-allowed}
+.buzzer.red:after{content:"✕";position:absolute;left:50%;top:50%;transform:translate(-50%,-54%);font-size:145px;font-weight:900;line-height:1;opacity:.9}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+.status{min-height:28px;font-size:20px;font-weight:800}
+.answers{display:grid;grid-template-columns:1fr 1fr;gap:13px;width:100%;max-width:420px}
+.answer{height:92px;border:0;border-radius:14px;color:#fff;font-size:40px;font-weight:900}
+.answer.a{background:#e53935}.answer.b{background:#1e88e5}.answer.c{background:#fbc02d;color:#111}.answer.d{background:#8e24aa}
+.answer.disabled{opacity:.45;pointer-events:none}
+.hidden{display:none!important}
+.leave{border:0;border-radius:10px;padding:11px 22px;background:#3a3d43;color:#fff;font-size:16px}
+.offline{color:#ff7070;font-size:15px;min-height:18px}
+@media(max-width:380px){.playerPick{width:125px;height:125px;font-size:18px}.buzzer{width:68vw;height:68vw}.buzzer.red:after{font-size:120px}}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <section id="roomScreen" class="screen active">
+    <h1>ENTER ROOM NUMBER</h1>
+    <div class="sub">Enter the room number given by the host.</div>
+    <input id="roomInput" type="text" inputmode="numeric" autocomplete="off" placeholder="Room Number" maxlength="20">
+    <button id="joinBtn" class="primary">ENTER ROOM</button>
+    <div id="roomError" class="error"></div>
+  </section>
+
+  <section id="playerScreen" class="screen">
+    <h1>SELECT PLAYER</h1>
+    <div id="roomText" class="room"></div>
+    <div class="sub">Choose your player slot.</div>
+    <div class="playerRow">
+      <button id="p1" class="playerPick">PLAYER 1</button>
+      <button id="p2" class="playerPick">PLAYER 2</button>
+    </div>
+    <div id="playerError" class="error"></div>
+  </section>
+
+  <section id="gameScreen" class="screen">
+    <div id="gameRoom" class="room"></div>
+    <button id="buzzer" class="buzzer">PLAYER</button>
+    <div id="status" class="status">READY</div>
+
+    <div id="answers" class="answers hidden">
+      <button class="answer a" data-answer="A">A</button>
+      <button class="answer b" data-answer="B">B</button>
+      <button class="answer c" data-answer="C">C</button>
+      <button class="answer d" data-answer="D">D</button>
+    </div>
+
+    <div id="offline" class="offline"></div>
+    <button id="leaveBtn" class="leave">LEAVE ROOM</button>
+  </section>
+
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyAKzNpD9BeiT-eymm0e1l_U3p_dggPrbEk",
+  authDomain: "jess-santi.firebaseapp.com",
+  databaseURL: "https://jess-santi-default-rtdb.firebaseio.com/",
+  projectId: "jess-santi",
+  storageBucket: "jess-santi.firebasestorage.app",
+  messagingSenderId: "457562056307",
+  appId: "1:457562056307:web:1be6c76bc8bdb5bd0aac06",
+  measurementId: "G-SKL83F1C8B"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+let room = "";
+let player = "";
+let roomRef = null;
+let playerRef = null;
+let currentRound = null;
+let hasAnswered = false;
+
+const $ = id => document.getElementById(id);
+const roomScreen = $("roomScreen");
+const playerScreen = $("playerScreen");
+const gameScreen = $("gameScreen");
+const buzzer = $("buzzer");
+const statusEl = $("status");
+const answers = $("answers");
+const offline = $("offline");
+
+function show(screen){
+  [roomScreen,playerScreen,gameScreen].forEach(x=>x.classList.remove("active"));
+  screen.classList.add("active");
+}
+
+function cleanRoom(s){
+  return s.replace(/[^a-zA-Z0-9_-]/g,"").slice(0,20);
+}
+
+$("roomInput").addEventListener("input", e => {
+  e.target.value = cleanRoom(e.target.value);
+});
+
+$("joinBtn").onclick = async () => {
+  const value = cleanRoom($("roomInput").value.trim());
+  $("roomError").textContent = "";
+  if(!value){
+    $("roomError").textContent = "Enter a room number.";
+    return;
+  }
+
+  room = value;
+  roomRef = db.ref("rooms/" + room);
+
+  try{
+    const snap = await roomRef.once("value");
+    if(!snap.exists()){
+      $("roomError").textContent = "Room not found. Ask the host for the correct room number.";
+      return;
+    }
+
+    const data = snap.val() || {};
+    if(!data.players) {
+      await roomRef.child("players").update({player1:null,player2:null});
+    }
+
+    $("roomText").textContent = "ROOM " + room;
+    show(playerScreen);
+  }catch(err){
+    console.error(err);
+    $("roomError").textContent = "Could not connect to the room.";
+  }
+};
+
+$("p1").onclick = () => joinPlayer("player1");
+$("p2").onclick = () => joinPlayer("player2");
+
+async function joinPlayer(slot){
+  $("playerError").textContent = "";
+  player = slot;
+  playerRef = roomRef.child("players/" + player);
+
+  try{
+    const result = await playerRef.transaction(current => {
+      if(current === null || current.connected === false){
+        return {connected:true, joinedAt:Date.now()};
+      }
+      return;
+    });
+
+    if(!result.committed){
+      $("playerError").textContent =
+        (slot === "player1" ? "PLAYER 1" : "PLAYER 2") + " is already occupied.";
+      return;
+    }
+
+    await playerRef.onDisconnect().remove();
+
+    $("gameRoom").textContent =
+      "ROOM " + room + " • " + (player === "player1" ? "PLAYER 1" : "PLAYER 2");
+
+    show(gameScreen);
+    resetUI();
+
+    watchRound();
+    watchBuzzer();
+  }catch(err){
+    console.error(err);
+    $("playerError").textContent = "Could not join this player slot.";
+  }
+}
+
+function resetUI(){
+  buzzer.className = "buzzer";
+  buzzer.disabled = false;
+  buzzer.textContent = player === "player1" ? "PLAYER 1" : "PLAYER 2";
+  statusEl.textContent = "READY";
+  answers.classList.add("hidden");
+  document.querySelectorAll(".answer").forEach(b => b.classList.remove("disabled"));
+  hasAnswered = false;
+}
+
+function watchRound(){
+  roomRef.child("round").on("value", snap => {
+    const round = snap.val();
+    if(round === null) return;
+
+    if(currentRound !== null && round !== currentRound){
+      resetUI();
+    }
+    currentRound = round;
+  });
+}
+
+function watchBuzzer(){
+  roomRef.child("buzzer").on("value", snap => {
+    const data = snap.val();
+
+    if(!data){
+      resetUI();
+      return;
+    }
+
+    if(data.player === player){
+      buzzer.className = "buzzer yellow";
+      buzzer.disabled = true;
+      statusEl.textContent = "FIRST! CHOOSE YOUR ANSWER";
+      answers.classList.remove("hidden");
+    }else{
+      buzzer.className = "buzzer red";
+      buzzer.disabled = true;
+      statusEl.textContent = "TOO LATE!";
+      answers.classList.add("hidden");
+    }
+  });
+}
+
+buzzer.onclick = async () => {
+  if(buzzer.disabled) return;
+
+  const ref = roomRef.child("buzzer");
+
+  try{
+    const result = await ref.transaction(current => {
+      if(current === null){
+        return {
+          player: player,
+          time: Date.now()
+        };
+      }
+      return;
+    });
+
+    if(!result.committed){
+      buzzer.className = "buzzer red";
+      buzzer.disabled = true;
+      statusEl.textContent = "TOO LATE!";
+    }
+  }catch(err){
+    console.error(err);
+    statusEl.textContent = "Connection error.";
+  }
+};
+
+document.querySelectorAll(".answer").forEach(button => {
+  button.onclick = async () => {
+    if(hasAnswered) return;
+
+    const snap = await roomRef.child("buzzer").once("value");
+    const buz = snap.val();
+
+    if(!buz || buz.player !== player) return;
+
+    hasAnswered = true;
+    document.querySelectorAll(".answer").forEach(b => b.classList.add("disabled"));
+
+    await roomRef.child("answer").set({
+      player: player,
+      answer: button.dataset.answer,
+      round: currentRound,
+      time: Date.now()
+    });
+
+    statusEl.textContent = "ANSWER SENT: " + button.dataset.answer;
+  };
+});
+
+$("leaveBtn").onclick = async () => {
+  try{
+    if(playerRef) await playerRef.remove();
+  }catch(err){
+    console.error(err);
+  }
+  location.reload();
+};
+
+db.ref(".info/connected").on("value", snap => {
+  offline.textContent = snap.val() === true ? "" : "OFFLINE";
+});
+</script>
+</body>
+</html>
