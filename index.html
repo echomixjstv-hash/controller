@@ -1,696 +1,497 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
 <meta charset="UTF-8">
-
 <meta name="viewport"
-      content="width=device-width,
-      initial-scale=1.0,
-      maximum-scale=1.0,
-      user-scalable=no">
+      content="width=device-width,initial-scale=1.0">
 
-<title>Quiz Remote</title>
+<title>Team Quiz Controller</title>
 
 <style>
-
 *{
     box-sizing:border-box;
     -webkit-tap-highlight-color:transparent;
 }
 
-html,
-body{
-
+html,body{
     margin:0;
-
     width:100%;
     height:100%;
-
     overflow:hidden;
-
     font-family:Arial,sans-serif;
-
     background:#101010;
-
     color:white;
 }
 
-
-button{
-    -webkit-user-select:none;
-    user-select:none;
-}
-
-
-/* =====================================================
-   SETUP SCREEN
-===================================================== */
-
-#setupScreen{
-
-    width:100%;
-    height:100vh;
-
+body{
     display:flex;
-
-    flex-direction:column;
-
     justify-content:center;
-
     align-items:center;
-
-    padding:20px;
-
-    text-align:center;
 }
 
-
-.logo{
-
-    font-size:32px;
-
-    font-weight:900;
-
-    margin-bottom:30px;
-}
-
-
-.roomLabel{
-
-    font-size:16px;
-
-    color:#aaa;
-
-    margin-bottom:10px;
-}
-
-
-#roomInput{
-
+.app{
     width:100%;
-
-    max-width:380px;
-
-    height:65px;
-
-    border:0;
-
-    outline:none;
-
-    border-radius:14px;
-
-    background:#252525;
-
-    color:white;
-
-    text-align:center;
-
-    font-size:30px;
-
-    font-weight:bold;
-
-    margin-bottom:25px;
-}
-
-
-.playerLabel{
-
-    color:#aaa;
-
-    margin-bottom:12px;
-}
-
-
-.playerButtons{
-
-    width:100%;
-
-    max-width:380px;
-
-    display:grid;
-
-    grid-template-columns:1fr 1fr;
-
-    gap:12px;
-
-    transition:.3s;
-}
-
-
-.playerButton{
-
-    height:80px;
-
-    border:0;
-
-    border-radius:16px;
-
-    color:white;
-
-    font-size:20px;
-
-    font-weight:bold;
-
-    cursor:pointer;
-
-    box-shadow:
-        0 6px 0 rgba(0,0,0,.5);
-
-    transition:
-        opacity .25s,
-        transform .15s,
-        width .25s;
-}
-
-
-.playerButton:active{
-
-    transform:translateY(6px);
-
-    box-shadow:none;
-}
-
-
-.player1Button{
-
-    background:#3498db;
-}
-
-
-.player2Button{
-
-    background:#e74c3c;
-}
-
-
-.playerButton.hidden{
-
-    display:none;
-}
-
-
-.setupStatus{
-
-    margin-top:20px;
-
-    min-height:20px;
-
-    color:#888;
-
-    font-size:14px;
-}
-
-
-.roomFull{
-
-    color:#ff5252 !important;
-
-    font-weight:bold;
-
-}
-
-
-
-/* =====================================================
-   REMOTE SCREEN
-===================================================== */
-
-#remoteScreen{
-
-    width:100%;
-
+    max-width:600px;
     height:100vh;
-
-    display:none;
-
+    padding:18px;
+    display:flex;
     flex-direction:column;
-
-    padding:12px;
 }
 
-
-
-/* =====================================================
+/* ================================
    HEADER
-===================================================== */
+================================ */
 
 .header{
-
-    height:45px;
-
-    flex-shrink:0;
-
-    display:flex;
-
-    justify-content:center;
-
-    align-items:center;
-
     text-align:center;
+    margin-bottom:15px;
 }
 
-
-.playerName{
-
-    font-size:25px;
-
-    font-weight:900;
+.header h1{
+    margin:0;
+    font-size:30px;
 }
-
-
-.roomName{
-
-    color:#888;
-
-    font-size:12px;
-
-    margin-top:3px;
-}
-
-
-
-/* =====================================================
-   ABCD
-===================================================== */
-
-.answers{
-
-    width:100%;
-
-    display:grid;
-
-    grid-template-columns:1fr 1fr;
-
-    gap:10px;
-
-    flex-shrink:0;
-}
-
-
-.answer{
-
-    height:80px;
-
-    border:0;
-
-    border-radius:16px;
-
-    color:white;
-
-    font-size:40px;
-
-    font-weight:900;
-
-    cursor:pointer;
-
-    box-shadow:
-        0 6px 0 rgba(0,0,0,.6);
-
-    transition:
-        transform .05s,
-        box-shadow .05s;
-}
-
-
-.answer:active{
-
-    transform:translateY(6px);
-
-    box-shadow:none;
-}
-
-
-#a{
-
-    background:#c62828;
-}
-
-
-#b{
-
-    background:#1565c0;
-}
-
-
-#c{
-
-    background:#2e7d32;
-}
-
-
-#d{
-
-    background:#ef6c00;
-}
-
-
-
-/* =====================================================
-   BUZZ
-===================================================== */
-
-.buzzArea{
-
-    flex:1;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    padding:15px 0 8px;
-}
-
-
-#buzzButton{
-
-    width:100%;
-
-    height:100%;
-
-    max-height:350px;
-
-    border:0;
-
-    border-radius:35px;
-
-    background:#d50000;
-
-    color:white;
-
-    font-size:55px;
-
-    font-weight:1000;
-
-    letter-spacing:2px;
-
-    cursor:pointer;
-
-    box-shadow:
-        0 12px 0 #750000,
-        inset 0 0 30px rgba(255,255,255,.12);
-}
-
-
-#buzzButton:active{
-
-    transform:translateY(12px);
-
-    box-shadow:
-        0 0 0 #750000;
-}
-
-
-
-/* =====================================================
-   STATUS
-===================================================== */
 
 .status{
-
-    height:28px;
-
-    flex-shrink:0;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    color:#888;
-
+    display:inline-block;
+    margin-top:8px;
+    padding:7px 15px;
+    border-radius:20px;
+    background:#555;
     font-size:13px;
 }
 
-
-.status.connected{
-
-    color:#00e676;
+.status.ok{
+    background:#159447;
 }
-
 
 .status.error{
-
-    color:#ff5252;
+    background:#c0392b;
 }
 
+/* ================================
+   ROOM
+================================ */
 
-
-/* =====================================================
-   SMALL SCREEN
-===================================================== */
-
-@media(max-height:600px){
-
-    .header{
-
-        height:40px;
-    }
-
-
-    .answer{
-
-        height:62px;
-
-        font-size:32px;
-    }
-
-
-    #buzzButton{
-
-        font-size:42px;
-    }
-
+.room-section{
+    background:#1d1d1d;
+    border-radius:18px;
+    padding:18px;
+    border:2px solid #333;
 }
 
+.room-title{
+    text-align:center;
+    font-size:16px;
+    font-weight:bold;
+    margin-bottom:10px;
+}
+
+.room-row{
+    display:flex;
+    gap:8px;
+}
+
+#roomInput{
+    flex:1;
+    min-width:0;
+    border:0;
+    border-radius:10px;
+    padding:14px;
+    font-size:20px;
+    text-align:center;
+    outline:none;
+}
+
+#connectBtn{
+    border:0;
+    border-radius:10px;
+    padding:0 18px;
+    background:#3498db;
+    color:white;
+    font-size:15px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+#connectBtn:active{
+    transform:scale(.97);
+}
+
+#connectBtn:disabled{
+    opacity:.5;
+}
+
+/* ================================
+   PLAYER SELECT
+================================ */
+
+.player-section{
+    margin-top:15px;
+    display:none;
+}
+
+.section-title{
+    text-align:center;
+    font-size:18px;
+    font-weight:bold;
+    margin-bottom:10px;
+}
+
+.players{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+}
+
+.player-btn{
+    min-height:120px;
+    border:4px solid;
+    border-radius:18px;
+    background:#202020;
+    color:white;
+    cursor:pointer;
+    font-size:25px;
+    font-weight:bold;
+    transition:.2s;
+}
+
+.player-btn:active{
+    transform:scale(.96);
+}
+
+.player1{
+    border-color:#3498db;
+}
+
+.player2{
+    border-color:#e74c3c;
+}
+
+.player-btn.unavailable{
+    opacity:.15;
+    transform:scale(.95);
+    pointer-events:none;
+}
+
+.player-btn.selected{
+    box-shadow:
+        0 0 12px currentColor,
+        0 0 30px currentColor;
+    background:#333;
+}
+
+.player-name{
+    display:block;
+    font-size:25px;
+}
+
+.player-status{
+    display:block;
+    margin-top:8px;
+    font-size:13px;
+    font-weight:normal;
+}
+
+/* ================================
+   CONTROLLER
+================================ */
+
+.controller{
+    flex:1;
+    min-height:0;
+    margin-top:15px;
+    display:none;
+    flex-direction:column;
+}
+
+.selected-player{
+    text-align:center;
+    font-size:20px;
+    font-weight:bold;
+    margin-bottom:12px;
+}
+
+.choice-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:8px;
+}
+
+.choice-btn{
+    height:75px;
+    border:0;
+    border-radius:14px;
+    background:#303030;
+    color:white;
+    font-size:30px;
+    font-weight:bold;
+    cursor:pointer;
+    transition:.12s;
+}
+
+.choice-btn:active{
+    transform:scale(.94);
+    background:#555;
+}
+
+.choice-btn.active{
+    background:#3498db;
+}
+
+/* ================================
+   BUZZER
+================================ */
+
+.buzz-area{
+    flex:1;
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+    padding:15px 0;
+}
+
+#buzzBtn{
+    width:100%;
+    height:100%;
+    max-height:300px;
+    border:0;
+    border-radius:30px;
+    background:#c0392b;
+    color:white;
+    font-size:60px;
+    font-weight:900;
+    cursor:pointer;
+    box-shadow:
+        0 8px 0 #7f1d1d,
+        0 15px 30px rgba(0,0,0,.5);
+    transition:.08s;
+}
+
+#buzzBtn:active{
+    transform:translateY(8px);
+    box-shadow:
+        0 0 0 #7f1d1d,
+        0 8px 20px rgba(0,0,0,.5);
+}
+
+#buzzBtn.sent{
+    background:#27ae60;
+}
+
+/* ================================
+   MESSAGE
+================================ */
+
+.message{
+    min-height:25px;
+    text-align:center;
+    font-size:15px;
+    font-weight:bold;
+    margin-top:5px;
+}
+
+.hidden{
+    display:none!important;
+}
+
+@media(max-width:450px){
+
+    .app{
+        padding:10px;
+    }
+
+    .header h1{
+        font-size:24px;
+    }
+
+    .player-btn{
+        min-height:100px;
+        font-size:21px;
+    }
+
+    .choice-btn{
+        height:65px;
+        font-size:25px;
+    }
+
+    #buzzBtn{
+        font-size:45px;
+        border-radius:25px;
+    }
+}
 </style>
-
 </head>
-
 
 <body>
 
-
-<!-- =====================================================
-     SETUP SCREEN
-===================================================== -->
-
-<div id="setupScreen">
-
-
-    <div class="logo">
-
-        🎮 QUIZ REMOTE
-
-    </div>
-
-
-    <div class="roomLabel">
-
-        ROOM NUMBER
-
-    </div>
-
-
-    <input
-        id="roomInput"
-        type="tel"
-        inputmode="numeric"
-        placeholder="ROOM #"
-        autocomplete="off"
-    >
-
-
-    <div class="playerLabel">
-
-        SELECT PLAYER
-
-    </div>
-
-
-    <div
-        id="playerButtons"
-        class="playerButtons"
-    >
-
-
-        <button
-            id="player1Button"
-            class="playerButton player1Button"
-            onclick="selectPlayer(1)"
-        >
-
-            🔵 PLAYER 1
-
-        </button>
-
-
-        <button
-            id="player2Button"
-            class="playerButton player2Button"
-            onclick="selectPlayer(2)"
-        >
-
-            🔴 PLAYER 2
-
-        </button>
-
-
-    </div>
-
-
-    <div
-        id="setupStatus"
-        class="setupStatus"
-    >
-
-        Enter room number
-
-    </div>
-
-
-</div>
-
-
-
-<!-- =====================================================
-     REMOTE SCREEN
-===================================================== -->
-
-<div id="remoteScreen">
-
+<div class="app">
 
     <div class="header">
+        <h1>🎮 QUIZ CONTROLLER</h1>
 
-        <div>
-
-            <div
-                id="playerName"
-                class="playerName"
-            >
-                PLAYER 1
-            </div>
+        <div id="status"
+             class="status">
+            Enter Room Number
+        </div>
+    </div>
 
 
-            <div
-                id="roomName"
-                class="roomName"
-            >
-                ROOM
-            </div>
+    <!-- ROOM -->
+
+    <div id="roomSection"
+         class="room-section">
+
+        <div class="room-title">
+            ENTER ROOM NUMBER
+        </div>
+
+        <div class="room-row">
+
+            <input
+                id="roomInput"
+                type="text"
+                inputmode="numeric"
+                autocomplete="off"
+                placeholder="ROOM NUMBER">
+
+            <button id="connectBtn">
+                CONNECT
+            </button>
 
         </div>
 
     </div>
 
 
+    <!-- PLAYER -->
 
-    <!-- =================================================
-         ABCD
-    ================================================== -->
+    <div id="playerSection"
+         class="player-section">
 
-    <div class="answers">
+        <div class="section-title">
+            SELECT PLAYER
+        </div>
 
+        <div class="players">
 
-        <button
-            id="a"
-            class="answer"
-            onclick="sendAnswer('A')"
-        >
-            A
-        </button>
+            <button
+                id="player1Btn"
+                class="player-btn player1">
 
+                <span class="player-name">
+                    🔵 PLAYER 1
+                </span>
 
-        <button
-            id="b"
-            class="answer"
-            onclick="sendAnswer('B')"
-        >
-            B
-        </button>
+                <span
+                    id="player1Status"
+                    class="player-status">
+                    Available
+                </span>
 
-
-        <button
-            id="c"
-            class="answer"
-            onclick="sendAnswer('C')"
-        >
-            C
-        </button>
+            </button>
 
 
-        <button
-            id="d"
-            class="answer"
-            onclick="sendAnswer('D')"
-        >
-            D
-        </button>
+            <button
+                id="player2Btn"
+                class="player-btn player2">
 
+                <span class="player-name">
+                    🔴 PLAYER 2
+                </span>
 
-    </div>
+                <span
+                    id="player2Status"
+                    class="player-status">
+                    Available
+                </span>
 
+            </button>
 
-
-    <!-- =================================================
-         BUZZ
-    ================================================== -->
-
-    <div class="buzzArea">
-
-
-        <button
-            id="buzzButton"
-            onclick="sendBuzz()"
-        >
-
-            BUZZ!
-
-        </button>
-
+        </div>
 
     </div>
 
 
+    <!-- CONTROLLER -->
 
-    <div
-        id="status"
-        class="status"
-    >
+    <div id="controller"
+         class="controller">
 
-        Ready
+        <div
+            id="selectedPlayer"
+            class="selected-player">
+        </div>
+
+
+        <!-- ABCD -->
+
+        <div class="choice-grid">
+
+            <button
+                class="choice-btn"
+                data-choice="A">
+                A
+            </button>
+
+            <button
+                class="choice-btn"
+                data-choice="B">
+                B
+            </button>
+
+            <button
+                class="choice-btn"
+                data-choice="C">
+                C
+            </button>
+
+            <button
+                class="choice-btn"
+                data-choice="D">
+                D
+            </button>
+
+        </div>
+
+
+        <!-- BUZZ -->
+
+        <div class="buzz-area">
+
+            <button id="buzzBtn">
+                BUZZ
+            </button>
+
+        </div>
+
+
+        <div
+            id="message"
+            class="message">
+        </div>
 
     </div>
-
 
 </div>
 
 
-
-<!-- =====================================================
-     FIREBASE
-===================================================== -->
+<!-- FIREBASE -->
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
 
 <script>
 
+/* =========================================================
+   FIREBASE
+========================================================= */
 
-/* =====================================================
-   FIREBASE CONFIG
-===================================================== */
-
-const firebaseConfig={
+const firebaseConfig = {
 
     apiKey:
-        "AIzaSyAKzNpD9BeiT-eymm0e1l_U3p_dggPrbEk",
+        "AIzaSyAKzNpDBeiT-eymm0e1l_U3p_dggPrbEk",
 
     authDomain:
         "jess-santi.firebaseapp.com",
@@ -712,106 +513,239 @@ const firebaseConfig={
 
     measurementId:
         "G-SKL83F1C8B"
-
 };
 
 
-firebase.initializeApp(
-    firebaseConfig
-);
+firebase.initializeApp(firebaseConfig);
+
+const db=firebase.database();
 
 
-const db=
-    firebase.database();
-
-
-
-/* =====================================================
+/* =========================================================
    VARIABLES
-===================================================== */
+========================================================= */
 
 let roomNumber="";
-
-let playerNumber=0;
-
-let playerNameValue="";
-
 let roomRef=null;
 
-let playerRef=null;
+let selectedPlayer="";
 
 let connected=false;
 
+let playerListener=null;
+let stateListener=null;
 
 
-/* =====================================================
+/* =========================================================
    ELEMENTS
-===================================================== */
-
-const setupScreen=
-    document.getElementById(
-        "setupScreen"
-    );
-
-
-const remoteScreen=
-    document.getElementById(
-        "remoteScreen"
-    );
-
+========================================================= */
 
 const roomInput=
     document.getElementById(
         "roomInput"
     );
 
-
-const setupStatus=
+const connectBtn=
     document.getElementById(
-        "setupStatus"
+        "connectBtn"
     );
-
-
-const player1Button=
-    document.getElementById(
-        "player1Button"
-    );
-
-
-const player2Button=
-    document.getElementById(
-        "player2Button"
-    );
-
-
-const playerName=
-    document.getElementById(
-        "playerName"
-    );
-
-
-const roomName=
-    document.getElementById(
-        "roomName"
-    );
-
 
 const status=
     document.getElementById(
         "status"
     );
 
-
-const buzzButton=
+const roomSection=
     document.getElementById(
-        "buzzButton"
+        "roomSection"
+    );
+
+const playerSection=
+    document.getElementById(
+        "playerSection"
+    );
+
+const controller=
+    document.getElementById(
+        "controller"
+    );
+
+const player1Btn=
+    document.getElementById(
+        "player1Btn"
+    );
+
+const player2Btn=
+    document.getElementById(
+        "player2Btn"
+    );
+
+const player1Status=
+    document.getElementById(
+        "player1Status"
+    );
+
+const player2Status=
+    document.getElementById(
+        "player2Status"
+    );
+
+const selectedPlayerText=
+    document.getElementById(
+        "selectedPlayer"
+    );
+
+const buzzBtn=
+    document.getElementById(
+        "buzzBtn"
+    );
+
+const message=
+    document.getElementById(
+        "message"
     );
 
 
+/* =========================================================
+   STATUS
+========================================================= */
 
-/* =====================================================
-   CHECK PLAYERS
-===================================================== */
+function setStatus(
+    text,
+    type=""
+){
+
+    status.innerText=text;
+
+    status.classList.remove(
+        "ok",
+        "error"
+    );
+
+    if(type)
+        status.classList.add(type);
+}
+
+
+/* =========================================================
+   CONNECT ROOM
+========================================================= */
+
+connectBtn.onclick=
+async function(){
+
+    const room=
+        roomInput.value.trim();
+
+    if(!room){
+
+        setStatus(
+            "Enter Room Number",
+            "error"
+        );
+
+        return;
+    }
+
+
+    connectBtn.disabled=true;
+
+    setStatus(
+        "Checking Room..."
+    );
+
+
+    try{
+
+        const ref=
+            db.ref(
+                "rooms/"+room
+            );
+
+
+        /*
+           IMPORTANT:
+
+           Hindi tayo basta gumagawa ng room.
+
+           Chine-check muna kung may
+           existing room/state.
+        */
+
+        const snap=
+            await ref.once("value");
+
+
+        if(!snap.exists()){
+
+            setStatus(
+                "❌ Room Not Found",
+                "error"
+            );
+
+            connectBtn.disabled=false;
+
+            return;
+        }
+
+
+        /*
+           Existing room lamang.
+        */
+
+        roomNumber=room;
+
+        roomRef=ref;
+
+        connected=true;
+
+
+        setStatus(
+            "✓ ROOM CONNECTED: "+room,
+            "ok"
+        );
+
+
+        roomInput.disabled=true;
+
+        connectBtn.innerText=
+            "CONNECTED";
+
+
+        /*
+           Hide room input after
+           successful connection.
+        */
+
+        roomSection.style.display=
+            "none";
+
+
+        playerSection.style.display=
+            "block";
+
+
+        listenPlayers();
+
+        listenQuizState();
+
+    }catch(error){
+
+        console.error(error);
+
+        setStatus(
+            "❌ Connection Error",
+            "error"
+        );
+
+        connectBtn.disabled=false;
+    }
+};
+
+
+/* =========================================================
+   PLAYER AVAILABILITY
+========================================================= */
 
 function listenPlayers(){
 
@@ -819,608 +753,637 @@ function listenPlayers(){
         return;
 
 
-    roomRef
-    .child("remote")
-    .on(
-        "value",
-        snap=>{
-
-            const players=
-                snap.val() || {};
-
-
-            const player1=
-                players.player1;
+    if(playerListener)
+        roomRef
+        .child("controllers")
+        .off(
+            "value",
+            playerListener
+        );
 
 
-            const player2=
-                players.player2;
+    playerListener=function(snap){
+
+        const data=
+            snap.val() || {};
 
 
-            /*
-               PLAYER 1
-            */
-
-            if(
-                player1 &&
-                player1.online===true
-            ){
-
-                player1Button.classList.add(
-                    "hidden"
-                );
-
-            }
-            else{
-
-                player1Button.classList.remove(
-                    "hidden"
-                );
-
-            }
+        const player1=
+            data.player1;
 
 
-            /*
-               PLAYER 2
-            */
+        const player2=
+            data.player2;
 
-            if(
-                player2 &&
-                player2.online===true
-            ){
 
-                player2Button.classList.add(
-                    "hidden"
-                );
+        updatePlayerButton(
+            player1Btn,
+            player1Status,
+            player1,
+            "player1"
+        );
 
-            }
-            else{
 
-                player2Button.classList.remove(
-                    "hidden"
-                );
+        updatePlayerButton(
+            player2Btn,
+            player2Status,
+            player2,
+            "player2"
+        );
 
-            }
 
+        /*
+           Kung kasalukuyang selected
+           player ay nawala,
+           controller isasara.
+        */
+
+        if(
+            selectedPlayer==="player1" &&
+            player1
+        ){
 
             /*
-               BOTH OCCUPIED
+               Okay pa ang Player 1.
             */
-
-            if(
-                player1 &&
-                player1.online===true &&
-                player2 &&
-                player2.online===true
-            ){
-
-                setupStatus.innerText=
-                    "ROOM FULL — BOTH PLAYERS ARE CONNECTED";
-
-                setupStatus.classList.add(
-                    "roomFull"
-                );
-
-            }
-            else{
-
-                /*
-                   Don't overwrite the message
-                   if remote is already open.
-                */
-
-                if(
-                    setupScreen.style.display!=="none"
-                ){
-
-                    setupStatus.innerText=
-                        "Select an available player.";
-
-                    setupStatus.classList.remove(
-                        "roomFull"
-                    );
-
-                }
-
-            }
 
         }
-    );
 
+        if(
+            selectedPlayer==="player2" &&
+            player2
+        ){
+
+            /*
+               Okay pa ang Player 2.
+            */
+
+        }
+
+
+        /*
+           Kapag nawala ang selected
+           player sa Firebase,
+           automatic balik sa
+           player selection.
+        */
+
+        if(
+            selectedPlayer==="player1" &&
+            !player1
+        ){
+
+            releaseLocalController();
+
+        }
+
+
+        if(
+            selectedPlayer==="player2" &&
+            !player2
+        ){
+
+            releaseLocalController();
+
+        }
+
+    };
+
+
+    roomRef
+    .child("controllers")
+    .on(
+        "value",
+        playerListener
+    );
 }
 
 
+/* =========================================================
+   PLAYER BUTTON UI
+========================================================= */
 
-/* =====================================================
-   SELECT PLAYER
-===================================================== */
+function updatePlayerButton(
+    button,
+    statusElement,
+    data,
+    player
+){
 
-window.selectPlayer=
-async function(player){
+    /*
+       Kung walang controller data,
+       available.
+    */
 
-    const room=
-        roomInput.value.trim();
+    if(!data){
 
+        button.classList.remove(
+            "unavailable"
+        );
 
-    if(!room){
-
-        setupStatus.innerText=
-            "Enter room number first.";
-
-        setupStatus.style.color=
-            "#ff5252";
+        statusElement.innerText=
+            "Available";
 
         return;
-
     }
-
-
-    roomNumber=room;
-
-
-    playerNameValue=
-        player===1
-        ? "player1"
-        : "player2";
-
-
-    roomRef=
-        db.ref(
-            "rooms/"+roomNumber
-        );
 
 
     /*
-       Reference for this exact player.
+       May gumagamit.
     */
 
-    playerRef=
+    button.classList.add(
+        "unavailable"
+    );
+
+    statusElement.innerText=
+        "IN USE";
+}
+
+
+/* =========================================================
+   SELECT PLAYER
+========================================================= */
+
+player1Btn.onclick=
+function(){
+
+    selectPlayer(
+        "player1"
+    );
+};
+
+
+player2Btn.onclick=
+function(){
+
+    selectPlayer(
+        "player2"
+    );
+};
+
+
+/* =========================================================
+   CLAIM PLAYER
+========================================================= */
+
+async function selectPlayer(
+    player
+){
+
+    if(!connected || !roomRef)
+        return;
+
+
+    if(selectedPlayer)
+        return;
+
+
+    const playerRef=
         roomRef
-        .child("remote")
-        .child(playerNameValue);
+        .child("controllers")
+        .child(player);
 
 
     try{
 
         /*
-           Check if player is already occupied.
+           Transaction ang gamit para
+           hindi dalawang device
+           sabay makakuha ng player.
         */
 
-        const snap=
-            await playerRef.once(
-                "value"
+        const result=
+            await playerRef.transaction(
+                current=>{
+
+                    if(current!==null)
+                        return;
+
+                    return {
+                        connected:true,
+                        at:
+                            firebase.database
+                            .ServerValue
+                            .TIMESTAMP
+                    };
+
+                }
             );
 
 
-        const existing=
-            snap.val();
+        if(!result.committed){
 
-
-        if(
-            existing &&
-            existing.online===true
-        ){
-
-            setupStatus.innerText=
-                "PLAYER "+
-                player+
-                " is already connected.";
-
-            setupStatus.style.color=
-                "#ff5252";
+            message.innerText=
+                "❌ Player already in use.";
 
             return;
-
         }
 
 
-        /*
-           Mark player online.
-        */
-
-        await playerRef.set({
-
-            online:true,
-
-            connectedAt:
-                firebase.database
-                .ServerValue
-                .TIMESTAMP
-
-        });
+        selectedPlayer=player;
 
 
-        /*
-           VERY IMPORTANT:
-
-           If browser closes,
-           phone disconnects,
-           tab crashes,
-           or internet connection drops,
-
-           Firebase automatically changes
-           online to false.
-        */
-
-        playerRef
-        .onDisconnect()
-        .set({
-
-            online:false,
-
-            disconnectedAt:
-                firebase.database
-                .ServerValue
-                .TIMESTAMP
-
-        });
+        playerSection.style.display=
+            "none";
 
 
-        connected=true;
+        controller.style.display=
+            "flex";
 
-        playerNumber=player;
+
+        if(player==="player1"){
+
+            selectedPlayerText.innerText=
+                "🔵 PLAYER 1";
+
+        }else{
+
+            selectedPlayerText.innerText=
+                "🔴 PLAYER 2";
+        }
+
+
+        message.innerText=
+            "Controller Ready";
 
 
         /*
-           Save room only.
+           Keep-alive.
         */
 
-        localStorage.setItem(
-            "quizRemoteRoom",
-            roomNumber
-        );
+        startPresence();
 
-
-        openRemote();
-
-
-    }
-    catch(error){
+    }catch(error){
 
         console.error(error);
 
-        setupStatus.innerText=
-            "Firebase connection failed.";
+        message.innerText=
+            "Unable to select player.";
+    }
+}
 
-        setupStatus.style.color=
-            "#ff5252";
 
+/* =========================================================
+   PRESENCE
+========================================================= */
+
+let presenceRef=null;
+
+function startPresence(){
+
+    if(!roomRef || !selectedPlayer)
+        return;
+
+
+    presenceRef=
+        roomRef
+        .child("controllers")
+        .child(selectedPlayer);
+
+
+    /*
+       Kapag browser/tab nagsara,
+       Firebase automatic magtanggal.
+    */
+
+    presenceRef
+    .onDisconnect()
+    .remove();
+
+
+    presenceRef.update({
+
+        connected:true,
+
+        at:
+            firebase.database
+            .ServerValue
+            .TIMESTAMP
+
+    });
+}
+
+
+/* =========================================================
+   RELEASE LOCAL
+========================================================= */
+
+function releaseLocalController(){
+
+    if(
+        presenceRef &&
+        selectedPlayer
+    ){
+
+        presenceRef
+        .remove()
+        .catch(()=>{});
     }
 
-};
+
+    selectedPlayer="";
+
+    presenceRef=null;
 
 
-
-/* =====================================================
-   OPEN REMOTE
-===================================================== */
-
-function openRemote(){
-
-    setupScreen.style.display=
+    controller.style.display=
         "none";
 
 
-    remoteScreen.style.display=
-        "flex";
+    playerSection.style.display=
+        "block";
 
 
-    playerName.innerText=
-        playerNumber===1
-        ? "🔵 PLAYER 1"
-        : "🔴 PLAYER 2";
-
-
-    roomName.innerText=
-        "ROOM "+roomNumber;
-
-
-    if(playerNumber===1){
-
-        playerName.style.color=
-            "#42a5f5";
-
-    }
-    else{
-
-        playerName.style.color=
-            "#ef5350";
-
-    }
-
-
-    status.innerText=
-        "Firebase: Connected";
-
-
-    status.className=
-        "status connected";
-
+    message.innerText=
+        "Player is no longer available.";
 }
 
 
+/* =========================================================
+   QUIZ STATE
+========================================================= */
 
-/* =====================================================
-   BUZZ
-===================================================== */
+function listenQuizState(){
 
-window.sendBuzz=
-async function(){
-
-    if(!connected || !roomRef)
+    if(!roomRef)
         return;
 
 
-    try{
+    if(stateListener)
+        roomRef
+        .child("state")
+        .off(
+            "value",
+            stateListener
+        );
 
-        /*
-           NO ROUND
-           NO STATE
-           NO PHASE
-        */
 
-        await roomRef
-        .child("buzzer")
-        .set({
+    stateListener=
+    function(snap){
 
-            player:
-                playerNameValue,
+        const state=
+            snap.val();
 
-            timestamp:
-                firebase.database
-                .ServerValue
-                .TIMESTAMP
 
-        });
-
-
-        buzzButton.innerText=
-            "BUZZ SENT";
-
-
-        buzzButton.style.background=
-            "#555";
-
-
-        status.innerText=
-            "BUZZ SENT";
-
-
-        setTimeout(()=>{
-
-            buzzButton.innerText=
-                "BUZZ!";
-
-            buzzButton.style.background=
-                "#d50000";
-
-            status.innerText=
-                "Ready";
-
-        },500);
-
-    }
-    catch(error){
-
-        console.error(error);
-
-        status.innerText=
-            "Firebase Error";
-
-        status.className=
-            "status error";
-
-    }
-
-};
-
-
-
-/* =====================================================
-   ANSWER
-===================================================== */
-
-window.sendAnswer=
-async function(answer){
-
-    if(!connected || !roomRef)
-        return;
-
-
-    try{
-
-        /*
-           NO ROUND
-           NO STATE
-           NO PHASE
-        */
-
-        await roomRef
-        .child("answer")
-        .set({
-
-            player:
-                playerNameValue,
-
-            answer:
-                answer,
-
-            timestamp:
-                firebase.database
-                .ServerValue
-                .TIMESTAMP
-
-        });
-
-
-        status.innerText=
-            "ANSWER "+
-            answer+
-            " SENT";
-
-
-        status.className=
-            "status connected";
-
-
-        setTimeout(()=>{
-
-            status.innerText=
-                "Ready";
-
-        },500);
-
-    }
-    catch(error){
-
-        console.error(error);
-
-        status.innerText=
-            "Firebase Error";
-
-        status.className=
-            "status error";
-
-    }
-
-};
-
-
-
-/* =====================================================
-   FIREBASE CONNECTION
-===================================================== */
-
-db.ref(".info/connected")
-.on(
-    "value",
-    snap=>{
-
-        if(
-            snap.val()===true &&
-            connected
-        ){
-
-            status.innerText=
-                "Firebase: Connected";
-
-            status.className=
-                "status connected";
-
-        }
-
-
-        if(
-            snap.val()===false &&
-            connected
-        ){
-
-            status.innerText=
-                "Firebase: Disconnected";
-
-            status.className=
-                "status error";
-
-        }
-
-    }
-);
-
-
-
-/* =====================================================
-   RESTORE ROOM
-===================================================== */
-
-const savedRoom=
-    localStorage.getItem(
-        "quizRemoteRoom"
-    );
-
-
-if(savedRoom){
-
-    roomInput.value=
-        savedRoom;
-
-}
-
-
-/* =====================================================
-   ROOM INPUT
-===================================================== */
-
-roomInput.addEventListener(
-    "input",
-    function(){
-
-        /*
-           Every time the room changes,
-           check available players.
-        */
-
-        const room=
-            roomInput.value.trim();
-
-
-        if(!room)
+        if(!state)
             return;
 
 
-        roomRef=
-            db.ref(
-                "rooms/"+room
+        /*
+           Controller remains active.
+
+           Walang round checking.
+           Walang round number requirement.
+        */
+
+
+        if(
+            state.phase===
+            "QUIZ_FINISHED"
+        ){
+
+            message.innerText=
+                "QUIZ FINISHED";
+
+            return;
+        }
+
+
+        /*
+           Kapag may ibang player
+           na nanalo sa buzzer,
+           hindi natin dini-disable
+           ang controller.
+
+           Host ang magde-decide kung
+           tatanggapin ang command.
+        */
+
+    };
+
+
+    roomRef
+    .child("state")
+    .on(
+        "value",
+        stateListener
+    );
+}
+
+
+/* =========================================================
+   SEND REMOTE COMMAND
+========================================================= */
+
+async function sendCommand(
+    command
+){
+
+    if(
+        !connected ||
+        !roomRef ||
+        !selectedPlayer
+    ){
+
+        message.innerText=
+            "Controller not ready.";
+
+        return;
+    }
+
+
+    try{
+
+        await roomRef
+        .child("remoteButton")
+        .set({
+
+            command:command,
+
+            player:selectedPlayer,
+
+            timestamp:
+                firebase.database
+                .ServerValue
+                .TIMESTAMP
+
+        });
+
+
+    }catch(error){
+
+        console.error(error);
+
+        message.innerText=
+            "Command failed.";
+    }
+}
+
+
+/* =========================================================
+   ABCD BUTTONS
+========================================================= */
+
+document
+.querySelectorAll(".choice-btn")
+.forEach(button=>{
+
+    button.onclick=
+    function(){
+
+        const choice=
+            button.dataset.choice;
+
+        sendCommand(
+            choice
+        );
+
+
+        /*
+           Visual feedback only.
+        */
+
+        button.classList.add(
+            "active"
+        );
+
+
+        setTimeout(()=>{
+
+            button.classList.remove(
+                "active"
             );
 
-
-        listenPlayers();
-
-    }
-);
+        },150);
 
 
+    };
 
-/* =====================================================
+});
+
+
+/* =========================================================
+   BUZZ
+========================================================= */
+
+let buzzLocked=false;
+
+
+buzzBtn.onclick=
+function(){
+
+    if(
+        !connected ||
+        !selectedPlayer
+    )
+        return;
+
+
+    /*
+       Very short local debounce.
+       Hindi ito round lock.
+    */
+
+    if(buzzLocked)
+        return;
+
+
+    buzzLocked=true;
+
+
+    sendCommand(
+        "TEAM"+
+        (
+            selectedPlayer==="player1"
+                ? "1"
+                : "2"
+        )
+    );
+
+
+    buzzBtn.classList.add(
+        "sent"
+    );
+
+
+    buzzBtn.innerText=
+        "BUZZED!";
+
+
+    setTimeout(()=>{
+
+        buzzLocked=false;
+
+        buzzBtn.classList.remove(
+            "sent"
+        );
+
+        buzzBtn.innerText=
+            "BUZZ";
+
+    },300);
+
+};
+
+
+/* =========================================================
    KEYBOARD
-===================================================== */
+   Z X C V = A B C D
+========================================================= */
 
 document.addEventListener(
     "keydown",
     function(event){
 
+        if(!selectedPlayer)
+            return;
+
+
         const key=
             event.key.toLowerCase();
 
 
-        /*
-           Z = A
-           X = B
-           C = C
-           V = D
-        */
+        const map={
 
-        if(key==="z"){
+            z:"A",
+            x:"B",
+            c:"C",
+            v:"D"
 
-            sendAnswer("A");
+        };
 
-        }
 
-        else if(key==="x"){
+        if(map[key]){
 
-            sendAnswer("B");
+            event.preventDefault();
 
-        }
+            sendCommand(
+                map[key]
+            );
 
-        else if(key==="c"){
 
-            sendAnswer("C");
+            const button=
+                document.querySelector(
+                    `[data-choice="${map[key]}"]`
+                );
 
-        }
 
-        else if(key==="v"){
+            if(button){
 
-            sendAnswer("D");
+                button.classList.add(
+                    "active"
+                );
 
+
+                setTimeout(()=>{
+
+                    button.classList.remove(
+                        "active"
+                    );
+
+                },150);
+            }
         }
 
 
@@ -1428,21 +1391,63 @@ document.addEventListener(
            SPACE = BUZZ
         */
 
-        else if(
-            event.code==="Space"
-        ){
+        if(event.code==="Space"){
 
             event.preventDefault();
 
-            sendBuzz();
+            buzzBtn.click();
 
         }
 
     }
 );
 
+
+/* =========================================================
+   KEEP FIREBASE CONNECTION
+========================================================= */
+
+db.ref(".info/connected")
+.on(
+    "value",
+    snap=>{
+
+        if(!snap.val())
+            return;
+
+        console.log(
+            "Firebase connection active"
+        );
+    }
+);
+
+
+/* =========================================================
+   PAGE CLOSE
+========================================================= */
+
+window.addEventListener(
+    "beforeunload",
+    function(){
+
+        /*
+           onDisconnect handles this
+           on Firebase server side.
+        */
+
+        if(
+            presenceRef &&
+            selectedPlayer
+        ){
+
+            presenceRef
+            .onDisconnect()
+            .remove();
+        }
+    }
+);
+
 </script>
 
 </body>
-
 </html>
