@@ -2,17 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
-
-<title>Remote Button Controller</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Team Quiz Remote</title>
 
 <style>
-
-*{
-    box-sizing:border-box;
-    -webkit-tap-highlight-color:transparent;
-}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 
 html,body{
     margin:0;
@@ -20,7 +14,8 @@ html,body{
     height:100%;
     overflow:hidden;
     font-family:Arial,sans-serif;
-    background:#111;
+    background:#101010;
+    color:white;
 }
 
 body{
@@ -29,157 +24,134 @@ body{
     align-items:center;
 }
 
-.controller{
-    width:min(700px,96vw);
-    height:min(850px,96vh);
+.wrap{
+    width:min(720px,96vw);
+    height:min(900px,96vh);
     display:flex;
     flex-direction:column;
-    gap:15px;
-    padding:15px;
+    gap:12px;
+    padding:12px;
 }
 
-.title{
-    color:white;
+h1{
+    margin:0;
     text-align:center;
-    font-size:clamp(20px,5vw,34px);
+    font-size:clamp(22px,6vw,38px);
+}
+
+.connection{
+    display:flex;
+    gap:8px;
+}
+
+#room{
+    flex:1;
+    min-width:0;
+    border:0;
+    border-radius:10px;
+    padding:13px;
+    font-size:18px;
+    text-align:center;
+}
+
+#connect{
+    border:0;
+    border-radius:10px;
+    padding:0 16px;
+    background:#3498db;
+    color:white;
     font-weight:bold;
+    font-size:16px;
 }
 
 .status{
-    text-align:center;
-    color:#00ff66;
-    font-size:16px;
     min-height:22px;
+    text-align:center;
+    font-size:14px;
+    color:#f1c40f;
 }
 
-.team-row{
+.row{
     display:grid;
     grid-template-columns:1fr 1fr;
-    gap:15px;
+    gap:12px;
     flex:1;
 }
 
-.choice-row{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:15px;
-    flex:1.5;
-}
-
-button{
+button.remote{
     border:0;
-    border-radius:20px;
-    font-size:clamp(32px,9vw,70px);
-    font-weight:bold;
+    border-radius:18px;
     color:white;
-    background:#222;
-    box-shadow:
-        0 5px 0 #000,
-        inset 0 0 15px rgba(255,255,255,.08);
+    font-size:clamp(34px,10vw,70px);
+    font-weight:bold;
     cursor:pointer;
-    user-select:none;
     touch-action:manipulation;
-    transition:.08s;
+    user-select:none;
+    box-shadow:0 5px 0 #000;
+    transition:transform .06s,opacity .1s;
 }
 
-button:active{
+button.remote:active{
     transform:translateY(5px);
     box-shadow:0 0 0 #000;
 }
 
-.team1{
-    background:#1769ff;
-}
-
-.team2{
-    background:#e91e63;
-}
-
-.choice{
-    background:#333;
-}
-
-button.locked{
+button.remote:disabled{
     opacity:.25;
     pointer-events:none;
 }
 
-button.active{
-    transform:scale(.97);
-}
+.team1{background:#1769ff}
+.team2{background:#e74c3c}
+.choice{background:#333}
 
-@media(max-width:500px){
-
-    .controller{
+@media(max-width:450px){
+    .wrap{
         width:100%;
         height:100%;
-        padding:10px;
-        gap:10px;
+        padding:8px;
+        gap:8px;
     }
 
-    button{
-        border-radius:15px;
+    button.remote{
+        border-radius:14px;
     }
-
 }
-
 </style>
 </head>
 
 <body>
 
-<div class="controller">
+<div class="wrap">
 
-    <div class="title">
-        REMOTE CONTROLLER
+    <h1>🏆 TEAM QUIZ REMOTE</h1>
+
+    <div class="connection">
+        <input id="room"
+               inputmode="numeric"
+               autocomplete="off"
+               placeholder="Room #">
+
+        <button id="connect">CONNECT</button>
     </div>
 
-    <div class="status" id="status">
-        CONNECTING...
+    <div id="status" class="status">
+        Enter the same Room # as the quiz.
     </div>
 
-    <div class="team-row">
-
-        <button
-            class="team1"
-            data-command="TEAM1">
-            TEAM 1
-        </button>
-
-        <button
-            class="team2"
-            data-command="TEAM2">
-            TEAM 2
-        </button>
-
+    <div class="row">
+        <button class="remote team1" data-command="TEAM1" disabled>TEAM 1</button>
+        <button class="remote team2" data-command="TEAM2" disabled>TEAM 2</button>
     </div>
 
-    <div class="choice-row">
+    <div class="row">
+        <button class="remote choice" data-command="A" disabled>A</button>
+        <button class="remote choice" data-command="B" disabled>B</button>
+    </div>
 
-        <button
-            class="choice"
-            data-command="A">
-            A
-        </button>
-
-        <button
-            class="choice"
-            data-command="B">
-            B
-        </button>
-
-        <button
-            class="choice"
-            data-command="C">
-            C
-        </button>
-
-        <button
-            class="choice"
-            data-command="D">
-            D
-        </button>
-
+    <div class="row">
+        <button class="remote choice" data-command="C" disabled>C</button>
+        <button class="remote choice" data-command="D" disabled>D</button>
     </div>
 
 </div>
@@ -188,283 +160,176 @@ button.active{
     <source src="sound.mp3" type="audio/mpeg">
 </audio>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
-<script type="module">
+<script>
+const firebaseConfig={
+    apiKey:"AIzaSyAKzNpD9BeiT-eymm0e1l_U3p_dggPrbEk",
+    authDomain:"jess-santi.firebaseapp.com",
+    databaseURL:"https://jess-santi-default-rtdb.firebaseio.com/",
+    projectId:"jess-santi",
+    storageBucket:"jess-santi.firebasestorage.app",
+    messagingSenderId:"457562056307",
+    appId:"1:457562056307:web:1be6c76bc8bdb5bd0aac06",
+    measurementId:"G-SKL83F1C8B"
+};
 
-import {
-    initializeApp
-} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+firebase.initializeApp(firebaseConfig);
 
-import {
-    getDatabase,
-    ref,
-    runTransaction
-} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-database.js";
+const db=firebase.database();
 
+const roomInput=document.getElementById("room");
+const connectBtn=document.getElementById("connect");
+const status=document.getElementById("status");
+const sound=document.getElementById("pressSound");
+const buttons=document.querySelectorAll(".remote");
 
-/* ==========================================
-   FIREBASE CONFIG
-========================================== */
+let roomRef=null;
+let connected=false;
+let localLock=false;
+let currentRound=1;
 
-const firebaseConfig = {
+function setButtons(enabled){
+    buttons.forEach(b=>b.disabled=!enabled);
+}
 
-    apiKey: "...",
+function setStatus(text,color="#f1c40f"){
+    status.textContent=text;
+    status.style.color=color;
+}
 
-    authDomain:
-        "jess-santi.firebaseapp.com",
+connectBtn.onclick=async function(){
 
-    databaseURL:
-        "https://jess-santi-default-rtdb.firebaseio.com/",
+    const room=roomInput.value.trim();
 
-    projectId:
-        "jess-santi",
+    if(!room){
+        setStatus("Enter a Room # first.","#e74c3c");
+        return;
+    }
 
-    storageBucket:
-        "jess-santi.firebasestorage.app",
+    connectBtn.disabled=true;
+    setStatus("Connecting...");
 
-    messagingSenderId:
-        "457562056307",
+    roomRef=db.ref("rooms/"+room);
 
-    appId:
-        "1:457562056307:web:1be6c76bc8bdb5bd0aac06"
+    try{
+        const roundSnap=await roomRef.child("round").once("value");
 
+        currentRound=Number(roundSnap.val()||1);
+
+        /*
+           Keep the remote synchronized with the current
+           quiz round.
+        */
+        roomRef.child("round").on("value",snap=>{
+            currentRound=Number(snap.val()||1);
+        });
+
+        await roomRef.child("remoteOnline").set(true);
+
+        connected=true;
+        setButtons(true);
+
+        connectBtn.textContent="✓ CONNECTED";
+        setStatus("Connected • Room "+room,"#00e676");
+
+    }catch(error){
+
+        console.error(error);
+        connected=false;
+        setButtons(false);
+        connectBtn.disabled=false;
+
+        setStatus("Firebase connection error.","#e74c3c");
+    }
 };
 
 
-/* ==========================================
-   FIREBASE
-========================================== */
+async function sendCommand(command){
 
-const app =
-    initializeApp(firebaseConfig);
-
-const db =
-    getDatabase(app);
-
-
-/* ==========================================
-   DATABASE LOCATION
-========================================== */
-
-const buttonRef =
-    ref(db,"remoteButton");
-
-
-/* ==========================================
-   ELEMENTS
-========================================== */
-
-const buttons =
-    document.querySelectorAll("button");
-
-const status =
-    document.getElementById("status");
-
-const pressSound =
-    document.getElementById("pressSound");
-
-
-/* ==========================================
-   LOCAL UI LOCK
-========================================== */
-
-let localLock = false;
-
-
-/* ==========================================
-   FIREBASE CONNECTION
-========================================== */
-
-status.textContent =
-    "CONNECTED";
-
-status.style.color =
-    "#00ff66";
-
-
-/* ==========================================
-   DISABLE ALL BUTTONS
-========================================== */
-
-function lockButtons(){
-
-    buttons.forEach(button => {
-        button.classList.add("locked");
-    });
-
-}
-
-
-/* ==========================================
-   ENABLE ALL BUTTONS
-========================================== */
-
-function unlockButtons(){
-
-    buttons.forEach(button => {
-        button.classList.remove("locked");
-    });
-
-}
-
-
-/* ==========================================
-   SEND BUTTON
-========================================== */
-
-async function sendButton(command){
-
-    if(localLock)
+    if(!connected || !roomRef || localLock)
         return;
 
-    localLock = true;
+    localLock=true;
+    setButtons(false);
 
-    lockButtons();
-
-
-    /*
-       Firebase transaction ang ginagamit
-       para isang device lang ang makakuha
-       ng first press.
-    */
+    const remoteRef=roomRef.child("remoteButton");
 
     try{
 
-        const result =
-            await runTransaction(
-                buttonRef,
-                currentData => {
-
-                    const now =
-                        Date.now();
-
-                    /*
-                       Kung may active lock pa,
-                       huwag tanggapin ang press.
-                    */
-
-                    if(
-                        currentData &&
-                        currentData.lockUntil &&
-                        now < currentData.lockUntil
-                    ){
-
-                        return;
-
-                    }
-
-
-                    /*
-                       First valid press.
-                    */
-
-                    return {
-
-                        command:command,
-
-                        timestamp:now,
-
-                        lockUntil:
-                            now + 1000
-
-                    };
-
-                }
-            );
-
-
         /*
-           Kung successful ang transaction,
-           ibig sabihin accepted ang press.
+           Firebase transaction provides the GLOBAL
+           1-second lock.
+
+           If another phone pressed first, this
+           transaction will not commit.
         */
+        const result=await remoteRef.transaction(currentData=>{
+
+            const now=Date.now();
+
+            if(
+                currentData &&
+                Number(currentData.lockUntil||0)>now
+            ){
+                return;
+            }
+
+            return {
+                command:command,
+                round:currentRound,
+                timestamp:now,
+                lockUntil:now+1000
+            };
+        });
 
         if(result.committed){
 
-            const data =
-                result.snapshot.val();
-
             /*
-               Sound lamang para sa
-               successful first press.
+               Only the accepted first press makes sound.
             */
+            sound.currentTime=0;
 
-            if(
-                data &&
-                data.command === command
-            ){
-
-                try{
-
-                    pressSound.currentTime = 0;
-
-                    await pressSound.play();
-
-                }catch(error){
-
-                    console.log(
-                        "Sound playback blocked:",
-                        error
-                    );
-
-                }
-
+            try{
+                await sound.play();
+            }catch(e){
+                console.log("Audio blocked:",e);
             }
 
         }
 
-
     }catch(error){
 
-        console.error(
-            "Firebase error:",
-            error
-        );
-
-        status.textContent =
-            "CONNECTION ERROR";
-
-        status.style.color =
-            "red";
+        console.error(error);
+        setStatus("Send error.","#e74c3c");
 
     }
 
-
     /*
-       1 second local lock.
+       Exactly 1 second until all keys are active again.
     */
+    setTimeout(()=>{
+        localLock=false;
 
-    setTimeout(() => {
-
-        localLock = false;
-
-        unlockButtons();
+        if(connected)
+            setButtons(true);
 
     },1000);
-
 }
 
 
-/* ==========================================
-   BUTTON EVENTS
-========================================== */
+buttons.forEach(button=>{
 
-buttons.forEach(button => {
+    button.addEventListener("click",()=>{
 
-    button.addEventListener(
-        "click",
-        () => {
+        const command=button.dataset.command;
 
-            const command =
-                button.dataset.command;
+        sendCommand(command);
 
-            sendButton(command);
-
-        }
-    );
+    });
 
 });
-
-
 </script>
 
 </body>
