@@ -11,7 +11,7 @@
                maximum-scale=1.0,
                user-scalable=no">
 
-<title>Quiz Remote</title>
+<title>Quiz Remote Controller</title>
 
 <style>
 
@@ -37,9 +37,9 @@ body{
 }
 
 
-/* =================================
+/* =====================================================
    SETUP SCREEN
-================================= */
+===================================================== */
 
 #setupScreen{
 
@@ -52,140 +52,124 @@ body{
     justify-content:center;
     align-items:center;
 
-    padding:25px;
+    padding:20px;
 
     text-align:center;
 }
-
 
 .logo{
 
     font-size:32px;
     font-weight:900;
 
-    margin-bottom:35px;
+    margin-bottom:30px;
 
     letter-spacing:2px;
 }
 
+.roomLabel{
 
-.roomTitle{
-
-    font-size:18px;
     color:#aaa;
+    font-size:17px;
 
     margin-bottom:10px;
 }
 
-
 #roomInput{
 
     width:100%;
-    max-width:400px;
+    max-width:380px;
 
-    height:70px;
+    height:65px;
 
-    border:none;
-    outline:none;
+    border:0;
+    outline:0;
 
-    border-radius:15px;
+    border-radius:14px;
 
-    background:#222;
+    background:#252525;
 
     color:white;
 
     text-align:center;
 
-    font-size:34px;
+    font-size:32px;
     font-weight:bold;
 
-    letter-spacing:6px;
+    letter-spacing:5px;
 
     margin-bottom:25px;
 }
 
-
 #roomInput:focus{
 
     box-shadow:
-        0 0 0 3px #2196f3;
-
+        0 0 0 3px #3498db;
 }
 
+.playerLabel{
 
-.playerTitle{
-
-    font-size:18px;
     color:#aaa;
+    font-size:17px;
 
     margin-bottom:12px;
 }
 
-
 .playerButtons{
 
     width:100%;
-    max-width:400px;
+    max-width:380px;
 
     display:grid;
 
-    grid-template-columns:1fr 1fr;
+    grid-template-columns:
+        1fr 1fr;
 
     gap:12px;
 }
-
 
 .playerButton{
 
     height:80px;
 
-    border:none;
+    border:0;
 
     border-radius:16px;
 
     color:white;
 
-    font-size:23px;
+    font-size:21px;
 
     font-weight:900;
-
-    background:#252525;
 
     cursor:pointer;
 
     box-shadow:
-        0 6px 0 #111;
+        0 6px 0 rgba(0,0,0,.6);
 }
-
 
 .playerButton:active{
 
     transform:translateY(6px);
 
-    box-shadow:
-        0 0 0 #111;
+    box-shadow:none;
 }
 
+.player1Button{
 
-#player1{
-
-    background:#1565c0;
-
+    background:#3498db;
 }
 
+.player2Button{
 
-#player2{
-
-    background:#c62828;
-
+    background:#e74c3c;
 }
-
 
 .setupStatus{
 
-    margin-top:25px;
+    margin-top:22px;
 
-    min-height:25px;
+    min-height:20px;
 
     color:#888;
 
@@ -193,9 +177,9 @@ body{
 }
 
 
-/* =================================
-   REMOTE SCREEN
-================================= */
+/* =====================================================
+   CONTROLLER
+===================================================== */
 
 #remoteScreen{
 
@@ -210,13 +194,13 @@ body{
 }
 
 
-/* =================================
+/* =====================================================
    HEADER
-================================= */
+===================================================== */
 
 .header{
 
-    height:65px;
+    height:58px;
 
     flex-shrink:0;
 
@@ -226,47 +210,44 @@ body{
 
     justify-content:space-between;
 
-    padding:0 8px;
+    padding:0 5px;
 }
-
 
 .playerName{
 
-    font-size:26px;
+    font-size:25px;
 
     font-weight:900;
 }
 
-
 .roomName{
 
-    font-size:14px;
+    color:#999;
 
-    color:#aaa;
+    font-size:13px;
 
+    margin-top:2px;
 }
 
+.changeButton{
 
-.changePlayer{
-
-    border:none;
+    border:0;
 
     background:#333;
 
     color:white;
 
-    padding:10px 13px;
+    border-radius:9px;
 
-    border-radius:10px;
+    padding:9px 12px;
 
     font-size:12px;
-
 }
 
 
-/* =================================
-   ANSWERS
-================================= */
+/* =====================================================
+   ABCD BUTTONS
+===================================================== */
 
 .answers{
 
@@ -282,12 +263,11 @@ body{
     flex-shrink:0;
 }
 
-
 .answer{
 
-    height:85px;
+    height:82px;
 
-    border:none;
+    border:0;
 
     border-radius:17px;
 
@@ -299,61 +279,37 @@ body{
 
     cursor:pointer;
 
-    user-select:none;
-
     box-shadow:
-        0 6px 0 rgba(0,0,0,.55);
-
+        0 6px 0 rgba(0,0,0,.6);
 }
-
 
 .answer:active{
 
     transform:translateY(6px);
 
-    box-shadow:
-        0 0 0 rgba(0,0,0,0);
+    box-shadow:none;
 }
-
-
-.answer.disabled{
-
-    opacity:.45;
-
-}
-
 
 #a{
-
     background:#c62828;
-
 }
-
 
 #b{
-
     background:#1565c0;
-
 }
-
 
 #c{
-
     background:#2e7d32;
-
 }
-
 
 #d{
-
     background:#ef6c00;
-
 }
 
 
-/* =================================
-   BUZZ
-================================= */
+/* =====================================================
+   BUZZ BUTTON
+===================================================== */
 
 .buzzArea{
 
@@ -365,20 +321,17 @@ body{
 
     justify-content:center;
 
-    padding:15px 0 8px;
-
+    padding:15px 0 7px;
 }
-
 
 #buzzButton{
 
     width:100%;
-
     height:100%;
 
     max-height:330px;
 
-    border:none;
+    border:0;
 
     border-radius:35px;
 
@@ -394,14 +347,10 @@ body{
 
     cursor:pointer;
 
-    user-select:none;
-
     box-shadow:
         0 12px 0 #750000,
         inset 0 0 30px rgba(255,255,255,.12);
-
 }
-
 
 #buzzButton:active{
 
@@ -410,9 +359,7 @@ body{
     box-shadow:
         0 0 0 #750000,
         inset 0 0 30px rgba(255,255,255,.2);
-
 }
-
 
 #buzzButton.sent{
 
@@ -420,64 +367,61 @@ body{
 
     box-shadow:
         0 6px 0 #222;
-
 }
 
 
-/* =================================
+/* =====================================================
    STATUS
-================================= */
+===================================================== */
 
 .status{
 
-    height:32px;
+    height:30px;
 
     flex-shrink:0;
 
     display:flex;
 
-    align-items:center;
-
     justify-content:center;
+
+    align-items:center;
 
     font-size:14px;
 
-    color:#999;
-
+    color:#888;
 }
-
 
 .status.connected{
 
     color:#00e676;
-
 }
-
 
 .status.error{
 
     color:#ff5252;
-
 }
 
 
-/* =================================
-   PLAYER COLORS
-================================= */
+/* =====================================================
+   MOBILE
+===================================================== */
 
-.player1Theme{
+@media(max-height:600px){
 
-    border-color:#1565c0;
+    .header{
+        height:48px;
+    }
+
+    .answer{
+        height:65px;
+        font-size:32px;
+    }
+
+    #buzzButton{
+        font-size:42px;
+    }
 
 }
-
-
-.player2Theme{
-
-    border-color:#c62828;
-
-}
-
 
 </style>
 
@@ -487,18 +431,18 @@ body{
 <body>
 
 
-<!-- =================================
-     SETUP SCREEN
-================================= -->
+<!-- =====================================================
+     SETUP
+===================================================== -->
 
 <div id="setupScreen">
 
     <div class="logo">
-        QUIZ REMOTE
+        🎮 QUIZ REMOTE
     </div>
 
 
-    <div class="roomTitle">
+    <div class="roomLabel">
         ROOM NUMBER
     </div>
 
@@ -513,7 +457,7 @@ body{
     >
 
 
-    <div class="playerTitle">
+    <div class="playerLabel">
         SELECT PLAYER
     </div>
 
@@ -521,8 +465,7 @@ body{
     <div class="playerButtons">
 
         <button
-            id="player1"
-            class="playerButton"
+            class="playerButton player1Button"
             onclick="selectPlayer(1)"
         >
             PLAYER 1
@@ -530,8 +473,7 @@ body{
 
 
         <button
-            id="player2"
-            class="playerButton"
+            class="playerButton player2Button"
             onclick="selectPlayer(2)"
         >
             PLAYER 2
@@ -551,9 +493,9 @@ body{
 
 
 
-<!-- =================================
-     REMOTE SCREEN
-================================= -->
+<!-- =====================================================
+     REMOTE
+===================================================== -->
 
 <div id="remoteScreen">
 
@@ -563,15 +505,15 @@ body{
         <div>
 
             <div
-                class="playerName"
                 id="playerName"
+                class="playerName"
             >
                 PLAYER 1
             </div>
 
             <div
-                class="roomName"
                 id="roomName"
+                class="roomName"
             >
                 ROOM 0000
             </div>
@@ -580,7 +522,7 @@ body{
 
 
         <button
-            class="changePlayer"
+            class="changeButton"
             onclick="changePlayer()"
         >
             CHANGE
@@ -590,9 +532,9 @@ body{
 
 
 
-    <!-- =============================
+    <!-- =================================================
          ABCD
-    ============================== -->
+    ================================================== -->
 
     <div class="answers">
 
@@ -635,9 +577,9 @@ body{
 
 
 
-    <!-- =============================
+    <!-- =================================================
          BUZZ
-    ============================== -->
+    ================================================== -->
 
     <div class="buzzArea">
 
@@ -659,43 +601,29 @@ body{
         Connecting...
     </div>
 
-
 </div>
 
 
 
-<!-- =================================
+<!-- =====================================================
      FIREBASE
-================================= -->
+===================================================== -->
 
-<script type="module">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 
-
-import {
-    initializeApp
-}
-from
-"https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
 
-import {
-    getDatabase,
-    ref,
-    set
-}
-from
-"https://www.gstatic.com/firebasejs/12.1.0/firebase-database.js";
+<script>
 
 
-
-/* =================================
+/* =====================================================
    FIREBASE CONFIG
-================================= */
+===================================================== */
 
-const firebaseConfig = {
+const firebaseConfig={
 
-    apiKey:
-        "...",
+    apiKey:"...",
 
     authDomain:
         "jess-santi.firebaseapp.com",
@@ -713,142 +641,106 @@ const firebaseConfig = {
         "457562056307",
 
     appId:
-        "1:457562056307:web:1be6c76bc8bdb5bd0aac06"
+        "1:457562056307:web:1be6c76bc8bdb5bd0aac06",
+
+    measurementId:
+        "G-SKL83F1C8B"
 
 };
 
 
-
-/* =================================
-   FIREBASE INIT
-================================= */
-
-const app =
-    initializeApp(firebaseConfig);
+firebase.initializeApp(
+    firebaseConfig
+);
 
 
-const db =
-    getDatabase(app);
+const db=
+    firebase.database();
 
 
 
-/* =================================
-   DEVICE ID
-================================= */
-
-function getDeviceId(){
-
-    let id =
-        localStorage.getItem(
-            "quizRemoteDeviceId"
-        );
-
-
-    if(!id){
-
-        id =
-            "device_" +
-            Date.now() +
-            "_" +
-            Math.random()
-                .toString(36)
-                .substring(2,9);
-
-
-        localStorage.setItem(
-            "quizRemoteDeviceId",
-            id
-        );
-
-    }
-
-
-    return id;
-
-}
-
-
-const deviceId =
-    getDeviceId();
-
-
-
-/* =================================
+/* =====================================================
    VARIABLES
-================================= */
+===================================================== */
 
-let currentRoom = "";
+let roomNumber="";
 
-let currentPlayer = 0;
+let playerNumber=0;
+
+let playerNameValue="";
+
+let roomRef=null;
+
+let connected=false;
 
 
 
-/* =================================
+/* =====================================================
    ELEMENTS
-================================= */
+===================================================== */
 
-const setupScreen =
+const setupScreen=
     document.getElementById(
         "setupScreen"
     );
 
 
-const remoteScreen =
+const remoteScreen=
     document.getElementById(
         "remoteScreen"
     );
 
 
-const roomInput =
+const roomInput=
     document.getElementById(
         "roomInput"
     );
 
 
-const setupStatus =
+const setupStatus=
     document.getElementById(
         "setupStatus"
     );
 
 
-const playerName =
+const playerName=
     document.getElementById(
         "playerName"
     );
 
 
-const roomName =
+const roomName=
     document.getElementById(
         "roomName"
     );
 
 
-const status =
+const status=
     document.getElementById(
         "status"
     );
 
 
-const buzzButton =
+const buzzButton=
     document.getElementById(
         "buzzButton"
     );
 
 
 
-/* =================================
-   SETUP STATUS
-================================= */
+/* =====================================================
+   SETUP MESSAGE
+===================================================== */
 
 function setupMessage(
-    message,
+    text,
     error=false
 ){
 
-    setupStatus.textContent =
-        message;
+    setupStatus.innerText=
+        text;
 
-    setupStatus.style.color =
+    setupStatus.style.color=
         error
         ? "#ff5252"
         : "#888";
@@ -857,14 +749,14 @@ function setupMessage(
 
 
 
-/* =================================
+/* =====================================================
    SELECT PLAYER
-================================= */
+===================================================== */
 
-window.selectPlayer =
+window.selectPlayer=
 async function(player){
 
-    const room =
+    const room=
         roomInput.value.trim();
 
 
@@ -878,89 +770,105 @@ async function(player){
         roomInput.focus();
 
         return;
-
     }
 
 
     if(!/^[0-9]+$/.test(room)){
 
         setupMessage(
-            "Room number must contain numbers only.",
+            "Numbers only.",
             true
         );
 
         return;
-
     }
 
 
     setupMessage(
-        "Connecting..."
+        "Connecting to room..."
     );
+
+
+    roomNumber=room;
+
+    playerNumber=player;
+
+
+    if(player===1){
+
+        playerNameValue=
+            "player1";
+
+    }else{
+
+        playerNameValue=
+            "player2";
+
+    }
+
+
+    /*
+       IMPORTANT:
+
+       SAME PATH AS HOST
+
+       rooms/{ROOM}
+    */
+
+    roomRef=
+        db.ref(
+            "rooms/"+roomNumber
+        );
 
 
     try{
 
-        currentRoom =
-            room;
-
-        currentPlayer =
-            player;
-
-
         /*
-           Register device
+           Check room
         */
 
-        const playerPath =
-            "quiz/rooms/" +
-            currentRoom +
-            "/players/player" +
-            currentPlayer;
+        await roomRef
+        .once("value");
 
 
-        await set(
-            ref(db,playerPath),
-            {
-
-                player:
-                    currentPlayer,
-
-                deviceId:
-                    deviceId,
-
-                online:
-                    true,
-
-                lastSeen:
-                    Date.now()
-
-            }
-        );
+        connected=true;
 
 
         /*
-           Save local assignment
+           Save player information.
+           This does NOT create the buzzer command.
+        */
+
+        await roomRef
+        .child("players")
+        .child(playerNameValue)
+        .set({
+
+            online:true,
+
+            connectedAt:
+                firebase.database.ServerValue.TIMESTAMP
+
+        });
+
+
+        /*
+           Save local settings
         */
 
         localStorage.setItem(
-            "quizRoom",
-            currentRoom
+            "quizRemoteRoom",
+            roomNumber
         );
 
 
         localStorage.setItem(
-            "quizPlayer",
-            currentPlayer
+            "quizRemotePlayer",
+            playerNumber
         );
 
-
-        /*
-           Open remote
-        */
 
         openRemote();
-
 
     }
     catch(error){
@@ -978,144 +886,159 @@ async function(player){
 
 
 
-/* =================================
+/* =====================================================
    OPEN REMOTE
-================================= */
+===================================================== */
 
 function openRemote(){
 
-    setupScreen.style.display =
+    setupScreen.style.display=
         "none";
 
 
-    remoteScreen.style.display =
+    remoteScreen.style.display=
         "flex";
 
 
-    playerName.textContent =
-        "PLAYER " +
-        currentPlayer;
+    playerName.innerText=
+        "PLAYER "+
+        playerNumber;
 
 
-    roomName.textContent =
-        "ROOM " +
-        currentRoom;
+    roomName.innerText=
+        "ROOM "+
+        roomNumber;
 
 
-    status.textContent =
-        "Connected";
+    if(playerNumber===1){
 
-
-    status.className =
-        "status connected";
-
-
-    if(currentPlayer === 1){
-
-        playerName.style.color =
+        playerName.style.color=
             "#42a5f5";
 
-    }
-    else{
+    }else{
 
-        playerName.style.color =
+        playerName.style.color=
             "#ef5350";
 
     }
+
+
+    status.innerText=
+        "Firebase: Connected";
+
+
+    status.className=
+        "status connected";
 
 }
 
 
 
-/* =================================
+/* =====================================================
    CHANGE PLAYER
-================================= */
+===================================================== */
 
-window.changePlayer =
+window.changePlayer=
 function(){
 
-    remoteScreen.style.display =
+    remoteScreen.style.display=
         "none";
 
 
-    setupScreen.style.display =
+    setupScreen.style.display=
         "flex";
 
 
     setupMessage(
-        "Select player"
+        "Select Player 1 or Player 2."
     );
 
 };
 
 
 
-/* =================================
-   SEND BUZZ
-================================= */
+/* =====================================================
+   GET CURRENT ROUND
+===================================================== */
 
-window.sendBuzz =
-async function(){
+async function getCurrentRound(){
 
-    if(!currentRoom ||
-       !currentPlayer){
-
-        return;
-
-    }
-
-
-    const now =
-        Date.now();
+    if(!roomRef)
+        return 1;
 
 
     try{
 
-        /*
-           Unique event ID.
+        const snap=
+            await roomRef
+            .child("round")
+            .once("value");
 
-           Hindi natin ginagamit ang
-           player ID bilang event key
-           para walang overwrite kapag
-           sunod-sunod ang pindot.
+
+        const value=
+            Number(snap.val());
+
+
+        if(value>0)
+            return value;
+
+
+    }
+    catch(error){
+
+        console.error(error);
+
+    }
+
+
+    return 1;
+
+}
+
+
+
+/* =====================================================
+   SEND BUZZ
+===================================================== */
+
+window.sendBuzz=
+async function(){
+
+    if(!connected)
+        return;
+
+
+    try{
+
+        const round=
+            await getCurrentRound();
+
+
+        /*
+           EXACT FORMAT EXPECTED
+           BY HOST:
+
+           rooms/ROOM/buzzer
+
+           player: "player1"
+           player: "player2"
+           round: NUMBER
         */
 
-        const eventId =
-            now +
-            "_" +
-            Math.random()
-                .toString(36)
-                .substring(2,7);
+        await roomRef
+        .child("buzzer")
+        .set({
 
+            player:
+                playerNameValue,
 
-        const buzzPath =
-            "quiz/rooms/" +
-            currentRoom +
-            "/events/buzz/" +
-            eventId;
+            round:
+                round,
 
+            timestamp:
+                firebase.database.ServerValue.TIMESTAMP
 
-        await set(
-            ref(db,buzzPath),
-            {
-
-                room:
-                    currentRoom,
-
-                player:
-                    currentPlayer,
-
-                deviceId:
-                    deviceId,
-
-                action:
-                    "BUZZ",
-
-                time:
-                    now
-
-            }
-        );
+        });
 
 
         /*
@@ -1127,16 +1050,14 @@ async function(){
         );
 
 
-        buzzButton.textContent =
+        buzzButton.innerText=
             "BUZZ SENT";
 
 
-        status.textContent =
-            "Buzz sent!";
-
-
-        status.className =
-            "status connected";
+        showStatus(
+            "BUZZ SENT",
+            false
+        );
 
 
         setTimeout(()=>{
@@ -1145,10 +1066,8 @@ async function(){
                 "sent"
             );
 
-
-            buzzButton.textContent =
+            buzzButton.innerText=
                 "BUZZ!";
-
 
         },700);
 
@@ -1158,13 +1077,10 @@ async function(){
 
         console.error(error);
 
-
-        status.textContent =
-            "Firebase error";
-
-
-        status.className =
-            "status error";
+        showStatus(
+            "Firebase error",
+            true
+        );
 
     }
 
@@ -1172,76 +1088,60 @@ async function(){
 
 
 
-/* =================================
+/* =====================================================
    SEND ANSWER
-================================= */
+===================================================== */
 
-window.sendAnswer =
+window.sendAnswer=
 async function(answer){
 
-    if(!currentRoom ||
-       !currentPlayer){
-
+    if(!connected)
         return;
-
-    }
-
-
-    const now =
-        Date.now();
 
 
     try{
 
-        const eventId =
-            now +
-            "_" +
-            Math.random()
-                .toString(36)
-                .substring(2,7);
+        const round=
+            await getCurrentRound();
 
 
-        const answerPath =
-            "quiz/rooms/" +
-            currentRoom +
-            "/events/answers/" +
-            eventId;
+        /*
+           EXACT FORMAT EXPECTED
+           BY HOST:
+
+           rooms/ROOM/answer
+
+           player: "player1"
+           player: "player2"
+           answer: A/B/C/D
+           round: NUMBER
+        */
+
+        await roomRef
+        .child("answer")
+        .set({
+
+            player:
+                playerNameValue,
+
+            answer:
+                answer,
+
+            round:
+                round,
+
+            timestamp:
+                firebase.database.ServerValue.TIMESTAMP
+
+        });
 
 
-        await set(
-            ref(db,answerPath),
-            {
-
-                room:
-                    currentRoom,
-
-                player:
-                    currentPlayer,
-
-                deviceId:
-                    deviceId,
-
-                action:
-                    "ANSWER",
-
-                answer:
-                    answer,
-
-                time:
-                    now
-
-            }
+        showStatus(
+            "ANSWER "+
+            answer+
+            " SENT",
+            false
         );
-
-
-        status.textContent =
-            "ANSWER " +
-            answer +
-            " SENT";
-
-
-        status.className =
-            "status connected";
 
 
     }
@@ -1249,13 +1149,10 @@ async function(answer){
 
         console.error(error);
 
-
-        status.textContent =
-            "Firebase error";
-
-
-        status.className =
-            "status error";
+        showStatus(
+            "Firebase error",
+            true
+        );
 
     }
 
@@ -1263,40 +1160,99 @@ async function(answer){
 
 
 
-/* =================================
-   AUTO RESTORE
-================================= */
+/* =====================================================
+   STATUS
+===================================================== */
 
-const savedRoom =
-    localStorage.getItem(
-        "quizRoom"
-    );
+function showStatus(
+    text,
+    error=false
+){
 
+    status.innerText=
+        text;
 
-const savedPlayer =
-    localStorage.getItem(
-        "quizPlayer"
-    );
-
-
-if(savedRoom && savedPlayer){
-
-    roomInput.value =
-        savedRoom;
+    status.className=
+        error
+        ? "status error"
+        : "status connected";
 
 }
 
 
 
-/* =================================
-   ENTER KEY
-================================= */
+/* =====================================================
+   FIREBASE CONNECTION MONITOR
+===================================================== */
+
+db.ref(".info/connected")
+.on(
+    "value",
+    snap=>{
+
+        if(snap.val()===true){
+
+            if(connected){
+
+                showStatus(
+                    "Firebase: Connected",
+                    false
+                );
+
+            }
+
+        }
+        else{
+
+            if(connected){
+
+                showStatus(
+                    "Firebase: Disconnected",
+                    true
+                );
+
+            }
+
+        }
+
+    }
+);
+
+
+
+/* =====================================================
+   RESTORE SAVED ROOM
+===================================================== */
+
+const savedRoom=
+    localStorage.getItem(
+        "quizRemoteRoom"
+    );
+
+
+const savedPlayer=
+    localStorage.getItem(
+        "quizRemotePlayer"
+    );
+
+
+if(savedRoom){
+
+    roomInput.value=
+        savedRoom;
+
+}
+
+
+/* =====================================================
+   ENTER
+===================================================== */
 
 roomInput.addEventListener(
     "keydown",
     function(event){
 
-        if(event.key === "Enter"){
+        if(event.key==="Enter"){
 
             if(
                 roomInput.value.trim()
@@ -1316,7 +1272,5 @@ roomInput.addEventListener(
 
 </script>
 
-
 </body>
-
 </html>
