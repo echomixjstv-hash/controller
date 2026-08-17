@@ -129,15 +129,15 @@ box-shadow:0 10px 35px #0008;
 }
 
 .buzzer.yellow{
-background:#ffd600;
-color:#111;
-animation:blink .55s infinite;
+background:#4caf50;
+color:#fff;
+animation:none;
 }
 
 .buzzer.red{
 background:#e53935;
 color:#fff;
-cursor:not-allowed;
+cursor:default;
 }
 
 .buzzer.red:after{
@@ -571,18 +571,9 @@ hideAnswers();
 
 function ready(){
 
-/*
-   HUWAG MAG-READY KUNG
-   WALA PA ANG TANONG.
-*/
-
-if(!questionReady){
-
-waitingForQuestion();
-
-return;
-
-}
+/* READY from the host means the quiz is active.
+   Older host versions may omit questionReady. */
+questionReady=true;
 
 $("buzzer").className="buzzer";
 
@@ -617,25 +608,21 @@ answerSent=false;
 
 function winner(){
 
-if(!questionReady){
+/* FIRST PLAYER: no yellow blinking. Choices appear immediately. */
+questionReady=true;
 
-waitingForQuestion();
+$("buzzer").className="buzzer yellow";
+$("buzzer").textContent=
+player==="player1"?"PLAYER 1":"PLAYER 2";
 
-return;
-
-}
-
-$("buzzer").className=
-"buzzer yellow";
-
-$("status").textContent=
-"FIRST TO BUZZ";
+$("status").textContent="FIRST TO BUZZ";
 
 $("answers").classList.remove("hidden");
-
 setAnswerButtons(true);
+clearAnswerSelection();
 
 localBuzz=true;
+answerSent=false;
 
 sound(firstSound);
 
@@ -648,16 +635,17 @@ sound(firstSound);
 
 function loser(){
 
-$("buzzer").className=
-"buzzer red";
+/* LATE PLAYER: stay active; do not disable the controller. */
+$("buzzer").className="buzzer";
+$("buzzer").textContent=
+player==="player1"?"PLAYER 1":"PLAYER 2";
 
-$("status").textContent=
-"TOO LATE";
+$("status").textContent="TOO LATE";
 
+/* Only the first player gets the choices. */
 hideAnswers();
 
 localBuzz=false;
-
 answerSent=false;
 
 sound(lateSound);
@@ -671,16 +659,15 @@ sound(lateSound);
 
 function disabled(){
 
-$("buzzer").className=
-"buzzer red";
+/* Other player has priority, but this controller remains active. */
+$("buzzer").className="buzzer";
+$("buzzer").textContent=
+player==="player1"?"PLAYER 1":"PLAYER 2";
 
-$("status").textContent=
-"DISABLED";
+$("status").textContent="TOO LATE";
 
 hideAnswers();
-
 localBuzz=false;
-
 answerSent=false;
 
 }
@@ -692,13 +679,7 @@ answerSent=false;
 
 function stealReady(){
 
-if(!questionReady){
-
-waitingForQuestion();
-
-return;
-
-}
+questionReady=true;
 
 $("buzzer").className=
 "buzzer";
@@ -906,7 +887,7 @@ state.allowedPlayer||null;
 */
 
 questionReady=
-state.questionReady===true;
+state.questionReady!==false;
 
 
 /*
@@ -939,14 +920,19 @@ return;
 */
 
 if(
-state.phase==="WAITING" ||
-!questionReady
+state.phase==="WAITING"
 ){
 
 waitingForQuestion();
 
 return;
 
+}
+
+/* READY/STEAL are considered an active quiz state even if the
+   older host does not send questionReady. */
+if(!questionReady && (state.phase==="READY" || state.phase==="STEAL")){
+    questionReady=true;
 }
 
 
@@ -1123,7 +1109,7 @@ return;
    Kung hindi active question
 */
 
-if(!questionReady){
+if(!questionReady && currentPhase!=="READY" && currentPhase!=="STEAL"){
 
 waitingForQuestion();
 
@@ -1131,6 +1117,7 @@ return;
 
 }
 
+questionReady=true;
 
 /*
    PLAYER 1 / PLAYER 2
@@ -1304,7 +1291,7 @@ allowedPlayer=
 state.allowedPlayer||null;
 
 questionReady=
-state.questionReady===true;
+state.questionReady!==false;
 
 currentPhase=
 state.phase||"WAITING";
@@ -1318,12 +1305,7 @@ state.phase||"WAITING";
    Display proper state
 */
 
-if(!questionReady){
-
-waitingForQuestion();
-
-}else if(
-currentPhase==="STEAL" &&
+if(currentPhase==="STEAL" &&
 allowedPlayer===player
 ){
 
@@ -1414,13 +1396,16 @@ return;
    Disabled / waiting
 */
 
-if(
-$("buzzer").classList.contains("red") ||
-$("buzzer").classList.contains("waiting")
-){
+if($("buzzer").classList.contains("red")){
 
 return;
 
+}
+
+/* If READY is active, allow the first press even if the local
+   screen has not refreshed its class yet. */
+if($("buzzer").classList.contains("waiting")){
+    $("buzzer").className="buzzer";
 }
 
 
