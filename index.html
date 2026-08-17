@@ -7,11 +7,11 @@
 
 <meta name="viewport"
       content="width=device-width,
-               initial-scale=1.0,
-               maximum-scale=1.0,
-               user-scalable=no">
+      initial-scale=1.0,
+      maximum-scale=1.0,
+      user-scalable=no">
 
-<title>Quiz Remote Controller</title>
+<title>Quiz Remote</title>
 
 <style>
 
@@ -22,18 +22,25 @@
 
 html,
 body{
+
     margin:0;
+
     width:100%;
     height:100%;
+
     overflow:hidden;
+
     font-family:Arial,sans-serif;
+
     background:#101010;
+
     color:white;
 }
 
-body{
-    display:flex;
-    flex-direction:column;
+
+button{
+    -webkit-user-select:none;
+    user-select:none;
 }
 
 
@@ -44,12 +51,14 @@ body{
 #setupScreen{
 
     width:100%;
-    height:100%;
+    height:100vh;
 
     display:flex;
+
     flex-direction:column;
 
     justify-content:center;
+
     align-items:center;
 
     padding:20px;
@@ -57,33 +66,38 @@ body{
     text-align:center;
 }
 
+
 .logo{
 
     font-size:32px;
+
     font-weight:900;
 
     margin-bottom:30px;
-
-    letter-spacing:2px;
 }
+
 
 .roomLabel{
 
+    font-size:16px;
+
     color:#aaa;
-    font-size:17px;
 
     margin-bottom:10px;
 }
 
+
 #roomInput{
 
     width:100%;
+
     max-width:380px;
 
     height:65px;
 
     border:0;
-    outline:0;
+
+    outline:none;
 
     border-radius:14px;
 
@@ -93,40 +107,37 @@ body{
 
     text-align:center;
 
-    font-size:32px;
-    font-weight:bold;
+    font-size:30px;
 
-    letter-spacing:5px;
+    font-weight:bold;
 
     margin-bottom:25px;
 }
 
-#roomInput:focus{
-
-    box-shadow:
-        0 0 0 3px #3498db;
-}
 
 .playerLabel{
 
     color:#aaa;
-    font-size:17px;
 
     margin-bottom:12px;
 }
 
+
 .playerButtons{
 
     width:100%;
+
     max-width:380px;
 
     display:grid;
 
-    grid-template-columns:
-        1fr 1fr;
+    grid-template-columns:1fr 1fr;
 
     gap:12px;
+
+    transition:.3s;
 }
+
 
 .playerButton{
 
@@ -138,15 +149,21 @@ body{
 
     color:white;
 
-    font-size:21px;
+    font-size:20px;
 
-    font-weight:900;
+    font-weight:bold;
 
     cursor:pointer;
 
     box-shadow:
-        0 6px 0 rgba(0,0,0,.6);
+        0 6px 0 rgba(0,0,0,.5);
+
+    transition:
+        opacity .25s,
+        transform .15s,
+        width .25s;
 }
+
 
 .playerButton:active{
 
@@ -155,19 +172,28 @@ body{
     box-shadow:none;
 }
 
+
 .player1Button{
 
     background:#3498db;
 }
+
 
 .player2Button{
 
     background:#e74c3c;
 }
 
+
+.playerButton.hidden{
+
+    display:none;
+}
+
+
 .setupStatus{
 
-    margin-top:22px;
+    margin-top:20px;
 
     min-height:20px;
 
@@ -177,14 +203,25 @@ body{
 }
 
 
+.roomFull{
+
+    color:#ff5252 !important;
+
+    font-weight:bold;
+
+}
+
+
+
 /* =====================================================
-   CONTROLLER
+   REMOTE SCREEN
 ===================================================== */
 
 #remoteScreen{
 
     width:100%;
-    height:100%;
+
+    height:100vh;
 
     display:none;
 
@@ -194,24 +231,26 @@ body{
 }
 
 
+
 /* =====================================================
    HEADER
 ===================================================== */
 
 .header{
 
-    height:58px;
+    height:45px;
 
     flex-shrink:0;
 
     display:flex;
 
+    justify-content:center;
+
     align-items:center;
 
-    justify-content:space-between;
-
-    padding:0 5px;
+    text-align:center;
 }
+
 
 .playerName{
 
@@ -220,33 +259,20 @@ body{
     font-weight:900;
 }
 
+
 .roomName{
 
-    color:#999;
-
-    font-size:13px;
-
-    margin-top:2px;
-}
-
-.changeButton{
-
-    border:0;
-
-    background:#333;
-
-    color:white;
-
-    border-radius:9px;
-
-    padding:9px 12px;
+    color:#888;
 
     font-size:12px;
+
+    margin-top:3px;
 }
+
 
 
 /* =====================================================
-   ABCD BUTTONS
+   ABCD
 ===================================================== */
 
 .answers{
@@ -255,21 +281,21 @@ body{
 
     display:grid;
 
-    grid-template-columns:
-        1fr 1fr;
+    grid-template-columns:1fr 1fr;
 
     gap:10px;
 
     flex-shrink:0;
 }
 
+
 .answer{
 
-    height:82px;
+    height:80px;
 
     border:0;
 
-    border-radius:17px;
+    border-radius:16px;
 
     color:white;
 
@@ -281,7 +307,12 @@ body{
 
     box-shadow:
         0 6px 0 rgba(0,0,0,.6);
+
+    transition:
+        transform .05s,
+        box-shadow .05s;
 }
+
 
 .answer:active{
 
@@ -290,25 +321,34 @@ body{
     box-shadow:none;
 }
 
+
 #a{
+
     background:#c62828;
 }
 
+
 #b{
+
     background:#1565c0;
 }
 
+
 #c{
+
     background:#2e7d32;
 }
 
+
 #d{
+
     background:#ef6c00;
 }
 
 
+
 /* =====================================================
-   BUZZ BUTTON
+   BUZZ
 ===================================================== */
 
 .buzzArea{
@@ -321,15 +361,17 @@ body{
 
     justify-content:center;
 
-    padding:15px 0 7px;
+    padding:15px 0 8px;
 }
+
 
 #buzzButton{
 
     width:100%;
+
     height:100%;
 
-    max-height:330px;
+    max-height:350px;
 
     border:0;
 
@@ -339,7 +381,7 @@ body{
 
     color:white;
 
-    font-size:52px;
+    font-size:55px;
 
     font-weight:1000;
 
@@ -352,22 +394,15 @@ body{
         inset 0 0 30px rgba(255,255,255,.12);
 }
 
+
 #buzzButton:active{
 
     transform:translateY(12px);
 
     box-shadow:
-        0 0 0 #750000,
-        inset 0 0 30px rgba(255,255,255,.2);
+        0 0 0 #750000;
 }
 
-#buzzButton.sent{
-
-    background:#555;
-
-    box-shadow:
-        0 6px 0 #222;
-}
 
 
 /* =====================================================
@@ -376,25 +411,27 @@ body{
 
 .status{
 
-    height:30px;
+    height:28px;
 
     flex-shrink:0;
 
     display:flex;
 
-    justify-content:center;
-
     align-items:center;
 
-    font-size:14px;
+    justify-content:center;
 
     color:#888;
+
+    font-size:13px;
 }
+
 
 .status.connected{
 
     color:#00e676;
 }
+
 
 .status.error{
 
@@ -402,22 +439,29 @@ body{
 }
 
 
+
 /* =====================================================
-   MOBILE
+   SMALL SCREEN
 ===================================================== */
 
 @media(max-height:600px){
 
     .header{
-        height:48px;
+
+        height:40px;
     }
 
+
     .answer{
-        height:65px;
+
+        height:62px;
+
         font-size:32px;
     }
 
+
     #buzzButton{
+
         font-size:42px;
     }
 
@@ -432,18 +476,23 @@ body{
 
 
 <!-- =====================================================
-     SETUP
+     SETUP SCREEN
 ===================================================== -->
 
 <div id="setupScreen">
 
+
     <div class="logo">
+
         🎮 QUIZ REMOTE
+
     </div>
 
 
     <div class="roomLabel">
+
         ROOM NUMBER
+
     </div>
 
 
@@ -451,33 +500,45 @@ body{
         id="roomInput"
         type="tel"
         inputmode="numeric"
-        maxlength="10"
-        placeholder="0000"
+        placeholder="ROOM #"
         autocomplete="off"
     >
 
 
     <div class="playerLabel">
+
         SELECT PLAYER
+
     </div>
 
 
-    <div class="playerButtons">
+    <div
+        id="playerButtons"
+        class="playerButtons"
+    >
+
 
         <button
+            id="player1Button"
             class="playerButton player1Button"
             onclick="selectPlayer(1)"
         >
-            PLAYER 1
+
+            🔵 PLAYER 1
+
         </button>
 
 
         <button
+            id="player2Button"
             class="playerButton player2Button"
             onclick="selectPlayer(2)"
         >
-            PLAYER 2
+
+            🔴 PLAYER 2
+
         </button>
+
 
     </div>
 
@@ -486,15 +547,18 @@ body{
         id="setupStatus"
         class="setupStatus"
     >
+
         Enter room number
+
     </div>
+
 
 </div>
 
 
 
 <!-- =====================================================
-     REMOTE
+     REMOTE SCREEN
 ===================================================== -->
 
 <div id="remoteScreen">
@@ -511,22 +575,15 @@ body{
                 PLAYER 1
             </div>
 
+
             <div
                 id="roomName"
                 class="roomName"
             >
-                ROOM 0000
+                ROOM
             </div>
 
         </div>
-
-
-        <button
-            class="changeButton"
-            onclick="changePlayer()"
-        >
-            CHANGE
-        </button>
 
     </div>
 
@@ -537,6 +594,7 @@ body{
     ================================================== -->
 
     <div class="answers">
+
 
         <button
             id="a"
@@ -573,6 +631,7 @@ body{
             D
         </button>
 
+
     </div>
 
 
@@ -583,12 +642,16 @@ body{
 
     <div class="buzzArea">
 
+
         <button
             id="buzzButton"
             onclick="sendBuzz()"
         >
+
             BUZZ!
+
         </button>
+
 
     </div>
 
@@ -598,8 +661,11 @@ body{
         id="status"
         class="status"
     >
-        Connecting...
+
+        Ready
+
     </div>
+
 
 </div>
 
@@ -623,7 +689,8 @@ body{
 
 const firebaseConfig={
 
-    apiKey:"...",
+    apiKey:
+        "AIzaSyAKzNpD9BeiT-eymm0e1l_U3p_dggPrbEk",
 
     authDomain:
         "jess-santi.firebaseapp.com",
@@ -671,6 +738,8 @@ let playerNameValue="";
 
 let roomRef=null;
 
+let playerRef=null;
+
 let connected=false;
 
 
@@ -703,6 +772,18 @@ const setupStatus=
     );
 
 
+const player1Button=
+    document.getElementById(
+        "player1Button"
+    );
+
+
+const player2Button=
+    document.getElementById(
+        "player2Button"
+    );
+
+
 const playerName=
     document.getElementById(
         "playerName"
@@ -729,21 +810,122 @@ const buzzButton=
 
 
 /* =====================================================
-   SETUP MESSAGE
+   CHECK PLAYERS
 ===================================================== */
 
-function setupMessage(
-    text,
-    error=false
-){
+function listenPlayers(){
 
-    setupStatus.innerText=
-        text;
+    if(!roomRef)
+        return;
 
-    setupStatus.style.color=
-        error
-        ? "#ff5252"
-        : "#888";
+
+    roomRef
+    .child("remote")
+    .on(
+        "value",
+        snap=>{
+
+            const players=
+                snap.val() || {};
+
+
+            const player1=
+                players.player1;
+
+
+            const player2=
+                players.player2;
+
+
+            /*
+               PLAYER 1
+            */
+
+            if(
+                player1 &&
+                player1.online===true
+            ){
+
+                player1Button.classList.add(
+                    "hidden"
+                );
+
+            }
+            else{
+
+                player1Button.classList.remove(
+                    "hidden"
+                );
+
+            }
+
+
+            /*
+               PLAYER 2
+            */
+
+            if(
+                player2 &&
+                player2.online===true
+            ){
+
+                player2Button.classList.add(
+                    "hidden"
+                );
+
+            }
+            else{
+
+                player2Button.classList.remove(
+                    "hidden"
+                );
+
+            }
+
+
+            /*
+               BOTH OCCUPIED
+            */
+
+            if(
+                player1 &&
+                player1.online===true &&
+                player2 &&
+                player2.online===true
+            ){
+
+                setupStatus.innerText=
+                    "ROOM FULL — BOTH PLAYERS ARE CONNECTED";
+
+                setupStatus.classList.add(
+                    "roomFull"
+                );
+
+            }
+            else{
+
+                /*
+                   Don't overwrite the message
+                   if remote is already open.
+                */
+
+                if(
+                    setupScreen.style.display!=="none"
+                ){
+
+                    setupStatus.innerText=
+                        "Select an available player.";
+
+                    setupStatus.classList.remove(
+                        "roomFull"
+                    );
+
+                }
+
+            }
+
+        }
+    );
 
 }
 
@@ -762,58 +944,25 @@ async function(player){
 
     if(!room){
 
-        setupMessage(
-            "Enter room number first.",
-            true
-        );
+        setupStatus.innerText=
+            "Enter room number first.";
 
-        roomInput.focus();
-
-        return;
-    }
-
-
-    if(!/^[0-9]+$/.test(room)){
-
-        setupMessage(
-            "Numbers only.",
-            true
-        );
+        setupStatus.style.color=
+            "#ff5252";
 
         return;
+
     }
-
-
-    setupMessage(
-        "Connecting to room..."
-    );
 
 
     roomNumber=room;
 
-    playerNumber=player;
 
+    playerNameValue=
+        player===1
+        ? "player1"
+        : "player2";
 
-    if(player===1){
-
-        playerNameValue=
-            "player1";
-
-    }else{
-
-        playerNameValue=
-            "player2";
-
-    }
-
-
-    /*
-       IMPORTANT:
-
-       SAME PATH AS HOST
-
-       rooms/{ROOM}
-    */
 
     roomRef=
         db.ref(
@@ -821,39 +970,99 @@ async function(player){
         );
 
 
+    /*
+       Reference for this exact player.
+    */
+
+    playerRef=
+        roomRef
+        .child("remote")
+        .child(playerNameValue);
+
+
     try{
 
         /*
-           Check room
+           Check if player is already occupied.
         */
 
-        await roomRef
-        .once("value");
+        const snap=
+            await playerRef.once(
+                "value"
+            );
 
 
-        connected=true;
+        const existing=
+            snap.val();
+
+
+        if(
+            existing &&
+            existing.online===true
+        ){
+
+            setupStatus.innerText=
+                "PLAYER "+
+                player+
+                " is already connected.";
+
+            setupStatus.style.color=
+                "#ff5252";
+
+            return;
+
+        }
 
 
         /*
-           Save player information.
-           This does NOT create the buzzer command.
+           Mark player online.
         */
 
-        await roomRef
-        .child("players")
-        .child(playerNameValue)
-        .set({
+        await playerRef.set({
 
             online:true,
 
             connectedAt:
-                firebase.database.ServerValue.TIMESTAMP
+                firebase.database
+                .ServerValue
+                .TIMESTAMP
 
         });
 
 
         /*
-           Save local settings
+           VERY IMPORTANT:
+
+           If browser closes,
+           phone disconnects,
+           tab crashes,
+           or internet connection drops,
+
+           Firebase automatically changes
+           online to false.
+        */
+
+        playerRef
+        .onDisconnect()
+        .set({
+
+            online:false,
+
+            disconnectedAt:
+                firebase.database
+                .ServerValue
+                .TIMESTAMP
+
+        });
+
+
+        connected=true;
+
+        playerNumber=player;
+
+
+        /*
+           Save room only.
         */
 
         localStorage.setItem(
@@ -862,23 +1071,19 @@ async function(player){
         );
 
 
-        localStorage.setItem(
-            "quizRemotePlayer",
-            playerNumber
-        );
-
-
         openRemote();
+
 
     }
     catch(error){
 
         console.error(error);
 
-        setupMessage(
-            "Firebase connection failed.",
-            true
-        );
+        setupStatus.innerText=
+            "Firebase connection failed.";
+
+        setupStatus.style.color=
+            "#ff5252";
 
     }
 
@@ -901,13 +1106,13 @@ function openRemote(){
 
 
     playerName.innerText=
-        "PLAYER "+
-        playerNumber;
+        playerNumber===1
+        ? "🔵 PLAYER 1"
+        : "🔴 PLAYER 2";
 
 
     roomName.innerText=
-        "ROOM "+
-        roomNumber;
+        "ROOM "+roomNumber;
 
 
     if(playerNumber===1){
@@ -915,7 +1120,8 @@ function openRemote(){
         playerName.style.color=
             "#42a5f5";
 
-    }else{
+    }
+    else{
 
         playerName.style.color=
             "#ef5350";
@@ -935,94 +1141,22 @@ function openRemote(){
 
 
 /* =====================================================
-   CHANGE PLAYER
-===================================================== */
-
-window.changePlayer=
-function(){
-
-    remoteScreen.style.display=
-        "none";
-
-
-    setupScreen.style.display=
-        "flex";
-
-
-    setupMessage(
-        "Select Player 1 or Player 2."
-    );
-
-};
-
-
-
-/* =====================================================
-   GET CURRENT ROUND
-===================================================== */
-
-async function getCurrentRound(){
-
-    if(!roomRef)
-        return 1;
-
-
-    try{
-
-        const snap=
-            await roomRef
-            .child("round")
-            .once("value");
-
-
-        const value=
-            Number(snap.val());
-
-
-        if(value>0)
-            return value;
-
-
-    }
-    catch(error){
-
-        console.error(error);
-
-    }
-
-
-    return 1;
-
-}
-
-
-
-/* =====================================================
-   SEND BUZZ
+   BUZZ
 ===================================================== */
 
 window.sendBuzz=
 async function(){
 
-    if(!connected)
+    if(!connected || !roomRef)
         return;
 
 
     try{
 
-        const round=
-            await getCurrentRound();
-
-
         /*
-           EXACT FORMAT EXPECTED
-           BY HOST:
-
-           rooms/ROOM/buzzer
-
-           player: "player1"
-           player: "player2"
-           round: NUMBER
+           NO ROUND
+           NO STATE
+           NO PHASE
         */
 
         await roomRef
@@ -1032,55 +1166,49 @@ async function(){
             player:
                 playerNameValue,
 
-            round:
-                round,
-
             timestamp:
-                firebase.database.ServerValue.TIMESTAMP
+                firebase.database
+                .ServerValue
+                .TIMESTAMP
 
         });
-
-
-        /*
-           Visual feedback
-        */
-
-        buzzButton.classList.add(
-            "sent"
-        );
 
 
         buzzButton.innerText=
             "BUZZ SENT";
 
 
-        showStatus(
-            "BUZZ SENT",
-            false
-        );
+        buzzButton.style.background=
+            "#555";
+
+
+        status.innerText=
+            "BUZZ SENT";
 
 
         setTimeout(()=>{
 
-            buzzButton.classList.remove(
-                "sent"
-            );
-
             buzzButton.innerText=
                 "BUZZ!";
 
-        },700);
+            buzzButton.style.background=
+                "#d50000";
 
+            status.innerText=
+                "Ready";
+
+        },500);
 
     }
     catch(error){
 
         console.error(error);
 
-        showStatus(
-            "Firebase error",
-            true
-        );
+        status.innerText=
+            "Firebase Error";
+
+        status.className=
+            "status error";
 
     }
 
@@ -1089,32 +1217,22 @@ async function(){
 
 
 /* =====================================================
-   SEND ANSWER
+   ANSWER
 ===================================================== */
 
 window.sendAnswer=
 async function(answer){
 
-    if(!connected)
+    if(!connected || !roomRef)
         return;
 
 
     try{
 
-        const round=
-            await getCurrentRound();
-
-
         /*
-           EXACT FORMAT EXPECTED
-           BY HOST:
-
-           rooms/ROOM/answer
-
-           player: "player1"
-           player: "player2"
-           answer: A/B/C/D
-           round: NUMBER
+           NO ROUND
+           NO STATE
+           NO PHASE
         */
 
         await roomRef
@@ -1127,32 +1245,41 @@ async function(answer){
             answer:
                 answer,
 
-            round:
-                round,
-
             timestamp:
-                firebase.database.ServerValue.TIMESTAMP
+                firebase.database
+                .ServerValue
+                .TIMESTAMP
 
         });
 
 
-        showStatus(
+        status.innerText=
             "ANSWER "+
             answer+
-            " SENT",
-            false
-        );
+            " SENT";
 
+
+        status.className=
+            "status connected";
+
+
+        setTimeout(()=>{
+
+            status.innerText=
+                "Ready";
+
+        },500);
 
     }
     catch(error){
 
         console.error(error);
 
-        showStatus(
-            "Firebase error",
-            true
-        );
+        status.innerText=
+            "Firebase Error";
+
+        status.className=
+            "status error";
 
     }
 
@@ -1161,28 +1288,7 @@ async function(answer){
 
 
 /* =====================================================
-   STATUS
-===================================================== */
-
-function showStatus(
-    text,
-    error=false
-){
-
-    status.innerText=
-        text;
-
-    status.className=
-        error
-        ? "status error"
-        : "status connected";
-
-}
-
-
-
-/* =====================================================
-   FIREBASE CONNECTION MONITOR
+   FIREBASE CONNECTION
 ===================================================== */
 
 db.ref(".info/connected")
@@ -1190,28 +1296,30 @@ db.ref(".info/connected")
     "value",
     snap=>{
 
-        if(snap.val()===true){
+        if(
+            snap.val()===true &&
+            connected
+        ){
 
-            if(connected){
+            status.innerText=
+                "Firebase: Connected";
 
-                showStatus(
-                    "Firebase: Connected",
-                    false
-                );
-
-            }
+            status.className=
+                "status connected";
 
         }
-        else{
 
-            if(connected){
 
-                showStatus(
-                    "Firebase: Disconnected",
-                    true
-                );
+        if(
+            snap.val()===false &&
+            connected
+        ){
 
-            }
+            status.innerText=
+                "Firebase: Disconnected";
+
+            status.className=
+                "status error";
 
         }
 
@@ -1221,18 +1329,12 @@ db.ref(".info/connected")
 
 
 /* =====================================================
-   RESTORE SAVED ROOM
+   RESTORE ROOM
 ===================================================== */
 
 const savedRoom=
     localStorage.getItem(
         "quizRemoteRoom"
-    );
-
-
-const savedPlayer=
-    localStorage.getItem(
-        "quizRemotePlayer"
     );
 
 
@@ -1245,32 +1347,102 @@ if(savedRoom){
 
 
 /* =====================================================
-   ENTER
+   ROOM INPUT
 ===================================================== */
 
 roomInput.addEventListener(
+    "input",
+    function(){
+
+        /*
+           Every time the room changes,
+           check available players.
+        */
+
+        const room=
+            roomInput.value.trim();
+
+
+        if(!room)
+            return;
+
+
+        roomRef=
+            db.ref(
+                "rooms/"+room
+            );
+
+
+        listenPlayers();
+
+    }
+);
+
+
+
+/* =====================================================
+   KEYBOARD
+===================================================== */
+
+document.addEventListener(
     "keydown",
     function(event){
 
-        if(event.key==="Enter"){
+        const key=
+            event.key.toLowerCase();
 
-            if(
-                roomInput.value.trim()
-            ){
 
-                setupMessage(
-                    "Now select Player 1 or Player 2."
-                );
+        /*
+           Z = A
+           X = B
+           C = C
+           V = D
+        */
 
-            }
+        if(key==="z"){
+
+            sendAnswer("A");
+
+        }
+
+        else if(key==="x"){
+
+            sendAnswer("B");
+
+        }
+
+        else if(key==="c"){
+
+            sendAnswer("C");
+
+        }
+
+        else if(key==="v"){
+
+            sendAnswer("D");
+
+        }
+
+
+        /*
+           SPACE = BUZZ
+        */
+
+        else if(
+            event.code==="Space"
+        ){
+
+            event.preventDefault();
+
+            sendBuzz();
 
         }
 
     }
 );
 
-
 </script>
 
 </body>
+
 </html>
