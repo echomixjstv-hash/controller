@@ -2,85 +2,384 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Quiz Player Controller</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Team Quiz - Remote Controller</title>
+
 <style>
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;width:100%;height:100%;font-family:Arial,sans-serif;background:#101114;color:#fff}
-body{display:flex;justify-content:center;align-items:center;overflow:hidden}
-#app{width:100%;max-width:620px;height:100%;min-height:100dvh;padding:22px;display:flex;align-items:center;justify-content:center}
-.screen{width:100%;display:none;flex-direction:column;align-items:center;text-align:center;gap:18px}
-.screen.active{display:flex}
-h1{font-size:30px;margin:0 0 8px}
-.sub{opacity:.75;font-size:17px}
-input{width:100%;max-width:420px;padding:18px;border:0;border-radius:14px;font-size:24px;text-align:center;outline:0}
-button{font-family:inherit}
-.primary{width:100%;max-width:420px;padding:19px;border:0;border-radius:14px;background:#2196f3;color:#fff;font-size:21px;font-weight:700}
-.primary:active,.playerPick:active,.buzzer:active,.answer:active{transform:scale(.97)}
-.error{min-height:24px;color:#ff7777;font-weight:700}
-.playerRow{display:flex;gap:18px;width:100%;justify-content:center}
-.playerPick{width:150px;height:150px;border:0;border-radius:50%;background:#35b94a;color:#fff;font-size:20px;font-weight:800}
-.room{font-size:20px;font-weight:700;opacity:.8}
-.buzzer{position:relative;width:min(76vw,330px);height:min(76vw,330px);border:0;border-radius:50%;background:#35b94a;color:#fff;font-size:31px;font-weight:900;box-shadow:0 10px 35px #0008;touch-action:manipulation}
-.buzzer.yellow{background:#ffd600;color:#111;animation:blink .55s infinite}
-.buzzer.red{background:#e53935;color:#fff;cursor:not-allowed}
-.buzzer.red:after{content:"✕";position:absolute;left:50%;top:50%;transform:translate(-50%,-54%);font-size:145px;font-weight:900;line-height:1;opacity:.9}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
-.status{min-height:28px;font-size:20px;font-weight:800}
-.answers{display:grid;grid-template-columns:1fr 1fr;gap:13px;width:100%;max-width:420px}
-.answer{height:92px;border:0;border-radius:14px;color:#fff;font-size:40px;font-weight:900}
-.answer.a{background:#e53935}.answer.b{background:#1e88e5}.answer.c{background:#fbc02d;color:#111}.answer.d{background:#8e24aa}
-.answer.disabled{opacity:.45;pointer-events:none}
-.hidden{display:none!important}
-.leave{border:0;border-radius:10px;padding:11px 22px;background:#3a3d43;color:#fff;font-size:16px}
-.offline{color:#ff7070;font-size:15px;min-height:18px}
-@media(max-width:380px){.playerPick{width:125px;height:125px;font-size:18px}.buzzer{width:68vw;height:68vw}.buzzer.red:after{font-size:120px}}
+*{
+    box-sizing:border-box
+}
+
+html,body{
+    margin:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    font-family:Arial,sans-serif;
+    background:#101010;
+    color:white;
+}
+
+.game{
+    width:100%;
+    height:100vh;
+    padding:12px;
+    display:flex;
+    flex-direction:column;
+}
+
+.top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:10px;
+}
+
+.title{
+    font-size:25px;
+    font-weight:bold;
+}
+
+.status{
+    padding:7px 14px;
+    border-radius:20px;
+    background:#555;
+    font-size:13px;
+}
+
+.status.connected{
+    background:#159447;
+}
+
+.scores{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:10px;
+    margin-bottom:10px;
+}
+
+.team{
+    flex:1;
+    max-width:50%;
+    text-align:center;
+    padding:15px;
+    border-radius:16px;
+    background:#202020;
+    border:4px solid;
+    min-height:120px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    transition:all .4s ease,opacity .3s ease;
+}
+
+.team1{
+    border-color:#3498db
+}
+
+.team2{
+    border-color:#e74c3c
+}
+
+.team.buzzer-winner{
+    flex:0 0 70%;
+    max-width:70%;
+    min-height:170px;
+    animation:winnerGlow .7s infinite;
+}
+
+.team.hidden-team{
+    flex:0 0 0%;
+    max-width:0;
+    width:0;
+    padding:0;
+    margin:0;
+    opacity:0;
+    transform:scale(0);
+    overflow:hidden;
+    border-width:0;
+}
+
+@keyframes winnerGlow{
+    0%,100%{
+        box-shadow:0 0 5px transparent;
+    }
+
+    50%{
+        box-shadow:
+            0 0 15px currentColor,
+            0 0 35px currentColor,
+            0 0 60px currentColor;
+        border-color:white;
+    }
+}
+
+.team-name{
+    font-size:30px;
+    font-weight:bold;
+}
+
+.team-score{
+    font-size:65px;
+    font-weight:bold;
+    line-height:1;
+    margin:5px 0;
+}
+
+.buzz{
+    min-height:25px;
+    font-size:18px;
+    font-weight:bold;
+}
+
+.question-box{
+    flex:1;
+    width:100%;
+    max-width:950px;
+    margin:auto;
+    background:white;
+    color:#111;
+    border-radius:15px;
+    padding:20px;
+    text-align:center;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+}
+
+.progress{
+    color:#666;
+    font-size:15px;
+    margin-bottom:12px;
+}
+
+.question{
+    font-size:28px;
+    font-weight:bold;
+    margin-bottom:22px;
+}
+
+.choices{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+}
+
+.choice{
+    width:100%;
+    padding:16px;
+    border:0;
+    border-radius:10px;
+    background:#e5e5e5;
+    font-size:18px;
+    cursor:pointer;
+    text-align:left;
+    transition:.2s;
+}
+
+.choice:hover:not(:disabled){
+    background:#d5d5d5;
+}
+
+.choice.revealed{
+    background:#9edcff !important;
+}
+
+.choice.correct{
+    background:#20a35a !important;
+    color:white !important;
+}
+
+.choice.wrong{
+    background:#e74c3c !important;
+    color:white !important;
+}
+
+.choice:disabled{
+    cursor:not-allowed;
+}
+
+.message{
+    min-height:30px;
+    margin-top:15px;
+    font-size:19px;
+    font-weight:bold;
+}
+
+.bottom{
+    height:55px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.control-btn{
+    border:0;
+    border-radius:8px;
+    padding:9px 18px;
+    font-size:14px;
+    cursor:pointer;
+}
+
+.control-btn:disabled{
+    opacity:.45;
+    cursor:not-allowed;
+}
+
+.connect{
+    background:#3498db;
+    color:white;
+}
+
+.second-screen{
+    background:#8e44ad;
+    color:white;
+    margin-left:8px;
+}
+
+#timer{
+    display:none;
+    margin:8px auto;
+    padding:8px 18px;
+    width:max-content;
+    min-width:90px;
+    border:3px solid #f1c40f;
+    border-radius:12px;
+    font-size:30px;
+    font-weight:bold;
+    background:#151515;
+    color:#f1c40f;
+}
+
+@media(max-width:600px){
+
+    .title{
+        font-size:18px
+    }
+
+    .question{
+        font-size:22px
+    }
+
+    .choices{
+        grid-template-columns:1fr
+    }
+
+    .team-score{
+        font-size:50px
+    }
+}
 </style>
 </head>
+
 <body>
-<div id="app">
 
-  <section id="roomScreen" class="screen active">
-    <h1>ENTER ROOM NUMBER</h1>
-    <div class="sub">Enter the room number given by the host.</div>
-    <input id="roomInput" type="text" inputmode="numeric" autocomplete="off" placeholder="Room Number" maxlength="20">
-    <button id="joinBtn" class="primary">ENTER ROOM</button>
-    <div id="roomError" class="error"></div>
-  </section>
+<div class="game">
 
-  <section id="playerScreen" class="screen">
-    <h1>SELECT PLAYER</h1>
-    <div id="roomText" class="room"></div>
-    <div class="sub">Choose your player slot.</div>
-    <div class="playerRow">
-      <button id="p1" class="playerPick">PLAYER 1</button>
-      <button id="p2" class="playerPick">PLAYER 2</button>
-    </div>
-    <div id="playerError" class="error"></div>
-  </section>
+<div class="top">
 
-  <section id="gameScreen" class="screen">
-    <div id="gameRoom" class="room"></div>
-    <button id="buzzer" class="buzzer">PLAYER</button>
-    <div id="status" class="status">READY</div>
-
-    <div id="answers" class="answers hidden">
-      <button class="answer a" data-answer="A">A</button>
-      <button class="answer b" data-answer="B">B</button>
-      <button class="answer c" data-answer="C">C</button>
-      <button class="answer d" data-answer="D">D</button>
+    <div class="title">
+        🏆 TEAM QUIZ
     </div>
 
-    <div id="offline" class="offline"></div>
-    <button id="leaveBtn" class="leave">LEAVE ROOM</button>
-  </section>
+    <div id="connectionStatus" class="status">
+        Firebase: Disconnected
+    </div>
 
 </div>
+
+
+<div class="scores">
+
+    <div id="team1Box" class="team team1">
+
+        <div class="team-name">
+            🔵 TEAM 1
+        </div>
+
+        <div id="score1" class="team-score">
+            0
+        </div>
+
+        <div id="buzz1" class="buzz">
+            Ready
+        </div>
+
+    </div>
+
+
+    <div id="team2Box" class="team team2">
+
+        <div class="team-name">
+            🔴 TEAM 2
+        </div>
+
+        <div id="score2" class="team-score">
+            0
+        </div>
+
+        <div id="buzz2" class="buzz">
+            Ready
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="question-box">
+
+    <div id="progress" class="progress"></div>
+
+    <div id="question" class="question"></div>
+
+    <div id="timer">
+        10
+    </div>
+
+    <div id="choices" class="choices"></div>
+
+    <div id="message" class="message"></div>
+
+</div>
+
+
+<div class="bottom">
+
+    <input id="hostRoomInput"
+           class="control-btn"
+           style="width:150px;text-align:center;"
+           inputmode="numeric"
+           placeholder="Room Number">
+
+    <button id="hostRoomBtn"
+            class="control-btn connect">
+        HOST ROOM
+    </button>
+
+    <button id="nextQuestionBtn"
+            class="control-btn second-screen"
+            disabled>
+        NEXT QUESTION
+    </button>
+
+    <button id="secondScreenBtn"
+            class="control-btn second-screen">
+        🖥️ SECOND SCREEN
+    </button>
+
+</div>
+
+</div>
+
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
 <script>
+
 const firebaseConfig = {
   apiKey: "AIzaSyAKzNpD9BeiT-eymm0e1l_U3p_dggPrbEk",
   authDomain: "jess-santi.firebaseapp.com",
@@ -94,212 +393,2270 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
+let hostRoom = "";
+let hostRoomRef = null;
+let firebaseListenersReady = false;
+let firebaseRound = 0;
 
-let room = "";
-let player = "";
-let roomRef = null;
-let playerRef = null;
-let currentRound = null;
-let hasAnswered = false;
+/* =========================================================
+   AUDIO
+========================================================= */
 
-const $ = id => document.getElementById(id);
-const roomScreen = $("roomScreen");
-const playerScreen = $("playerScreen");
-const gameScreen = $("gameScreen");
-const buzzer = $("buzzer");
-const statusEl = $("status");
-const answers = $("answers");
-const offline = $("offline");
+const bgm=
+    new Audio("audio/bgm.mp3");
 
-function show(screen){
-  [roomScreen,playerScreen,gameScreen].forEach(x=>x.classList.remove("active"));
-  screen.classList.add("active");
-}
+const bgm1=
+    new Audio("audio/bgm1.mp3");
 
-function cleanRoom(s){
-  return s.replace(/[^a-zA-Z0-9_-]/g,"").slice(0,20);
-}
+const bgm1Variants=[
 
-$("roomInput").addEventListener("input", e => {
-  e.target.value = cleanRoom(e.target.value);
+    new Audio("audio/bgm1-1.mp3"),
+    new Audio("audio/bgm1-2.mp3"),
+    new Audio("audio/bgm1-3.mp3"),
+    new Audio("audio/bgm1-4.mp3")
+
+];
+
+const bgm2=
+    new Audio("audio/bgm2.mp3");
+
+const bgm3=
+    new Audio("audio/bgm3.mp3");
+
+
+const correctSound=
+    new Audio("audio/Fact.mp3");
+
+const wrongSound=
+    new Audio("audio/mali.mp3");
+
+const timerSound=
+    new Audio("audio/timer.mp3");
+
+
+bgm.loop=true;
+bgm1.loop=true;
+bgm2.loop=true;
+bgm3.loop=false;
+
+
+bgm.volume=.5;
+bgm1.volume=.3;
+bgm2.volume=.5;
+bgm3.volume=.2;
+
+timerSound.volume=.5;
+
+
+bgm1Variants.forEach(audio=>{
+
+    audio.loop=false;
+    audio.volume=.5;
+
 });
 
-$("joinBtn").onclick = async () => {
-  const value = cleanRoom($("roomInput").value.trim());
-  $("roomError").textContent = "";
-  if(!value){
-    $("roomError").textContent = "Enter a room number.";
-    return;
-  }
 
-  room = value;
-  roomRef = db.ref("rooms/" + room);
+let musicStarted=false;
 
-  try{
-    const snap = await roomRef.once("value");
-    if(!snap.exists()){
-      $("roomError").textContent = "Room not found. Ask the host for the correct room number.";
-      return;
+
+/* =========================================================
+   AUDIO PLAY
+========================================================= */
+
+async function playAudio(audio){
+
+    try{
+
+        await audio.play();
+
+        return true;
+
+    }catch(error){
+
+        console.log(
+            "Audio blocked:",
+            error
+        );
+
+        return false;
+    }
+}
+
+
+function stopAudio(audio){
+
+    audio.pause();
+    audio.currentTime=0;
+}
+
+
+/* =========================================================
+   INITIAL BGM
+========================================================= */
+
+async function startInitialBGM(){
+
+    if(musicStarted)
+        return;
+
+    musicStarted=true;
+
+    await playAudio(bgm);
+}
+
+
+document.addEventListener(
+    "click",
+    startInitialBGM,
+    {once:true}
+);
+
+
+/* =========================================================
+   BGM1 FADE VARIABLES
+========================================================= */
+
+let currentBgm1=null;
+
+let bgm1Fading=false;
+
+let bgm1FadeInterval=null;
+
+let autoNextAfterBgm1=false;
+
+
+/* =========================================================
+   CLEAR FADE
+========================================================= */
+
+function clearBgm1Fade(){
+
+    if(bgm1FadeInterval){
+
+        clearInterval(
+            bgm1FadeInterval
+        );
+
+        bgm1FadeInterval=null;
     }
 
-    const data = snap.val() || {};
-    if(!data.players) {
-      await roomRef.child("players").update({player1:null,player2:null});
+    bgm1Fading=false;
+}
+
+
+/* =========================================================
+   FADE OUT BGM1
+========================================================= */
+
+function fadeOutBgm1(callback){
+
+    const audio=currentBgm1;
+
+    if(!audio){
+
+        if(callback)
+            callback();
+
+        return;
     }
 
-    $("roomText").textContent = "ROOM " + room;
-    show(playerScreen);
-  }catch(err){
-    console.error(err);
-    $("roomError").textContent = "Could not connect to the room.";
-  }
-};
 
-$("p1").onclick = () => joinPlayer("player1");
-$("p2").onclick = () => joinPlayer("player2");
+    if(bgm1Fading)
+        return;
 
-async function joinPlayer(slot){
-  $("playerError").textContent = "";
-  player = slot;
-  playerRef = roomRef.child("players/" + player);
 
-  try{
-    const result = await playerRef.transaction(current => {
-      if(current === null || current.connected === false){
-        return {connected:true, joinedAt:Date.now()};
-      }
-      return;
+    bgm1Fading=true;
+
+
+    const startVolume=
+        audio.volume;
+
+    const fadeTime=1500;
+
+    const steps=30;
+
+    const stepTime=
+        fadeTime/steps;
+
+    let step=0;
+
+
+    bgm1FadeInterval=
+        setInterval(()=>{
+
+            step++;
+
+
+            audio.volume=
+                Math.max(
+                    0,
+                    startVolume*
+                    (1-step/steps)
+                );
+
+
+            if(step>=steps){
+
+                clearInterval(
+                    bgm1FadeInterval
+                );
+
+                bgm1FadeInterval=null;
+
+
+                audio.pause();
+
+                audio.currentTime=0;
+
+                audio.volume=
+                    startVolume;
+
+
+                audio.onended=null;
+
+
+                if(currentBgm1===audio){
+
+                    currentBgm1=null;
+
+                }
+
+
+                bgm1Fading=false;
+
+
+                if(callback)
+                    callback();
+
+            }
+
+        },stepTime);
+}
+
+
+/* =========================================================
+   START QUIZ BGM
+========================================================= */
+
+async function startQuizBGM(){
+
+    stopAudio(bgm);
+    stopAudio(bgm1);
+    stopAudio(bgm3);
+
+
+    /*
+       Kung may BGM1 na kasalukuyang
+       tumutugtog, fade muna.
+    */
+
+    if(currentBgm1){
+
+        const oldBgm1=
+            currentBgm1;
+
+
+        currentBgm1=null;
+
+
+        await new Promise(resolve=>{
+
+            if(
+                !oldBgm1.paused &&
+                oldBgm1.currentTime>0
+            ){
+
+                const startVolume=
+                    oldBgm1.volume;
+
+                const fadeTime=1000;
+
+                const steps=20;
+
+                const stepTime=
+                    fadeTime/steps;
+
+                let step=0;
+
+
+                const fade=
+                    setInterval(()=>{
+
+                        step++;
+
+
+                        oldBgm1.volume=
+                            Math.max(
+                                0,
+                                startVolume*
+                                (1-step/steps)
+                            );
+
+
+                        if(step>=steps){
+
+                            clearInterval(fade);
+
+
+                            oldBgm1.pause();
+
+                            oldBgm1.currentTime=0;
+
+                            oldBgm1.volume=.5;
+
+                            oldBgm1.onended=null;
+
+
+                            resolve();
+                        }
+
+                    },stepTime);
+
+            }else{
+
+                oldBgm1.pause();
+
+                oldBgm1.currentTime=0;
+
+                oldBgm1.volume=.5;
+
+                oldBgm1.onended=null;
+
+                resolve();
+
+            }
+
+        });
+
+    }
+
+
+    bgm1Variants.forEach(audio=>{
+
+        if(audio!==currentBgm1){
+
+            audio.onended=null;
+
+            audio.pause();
+
+            audio.currentTime=0;
+
+            audio.volume=.5;
+
+        }
+
     });
 
-    if(!result.committed){
-      $("playerError").textContent =
-        (slot === "player1" ? "PLAYER 1" : "PLAYER 2") + " is already occupied.";
-      return;
-    }
 
-    await playerRef.onDisconnect().remove();
-
-    $("gameRoom").textContent =
-      "ROOM " + room + " • " + (player === "player1" ? "PLAYER 1" : "PLAYER 2");
-
-    show(gameScreen);
-    resetUI();
-
-    watchRound();
-    watchBuzzer();
-  }catch(err){
-    console.error(err);
-    $("playerError").textContent = "Could not join this player slot.";
-  }
+    await playAudio(bgm2);
 }
 
-function resetUI(){
-  buzzer.className = "buzzer";
-  buzzer.disabled = false;
-  buzzer.textContent = player === "player1" ? "PLAYER 1" : "PLAYER 2";
-  statusEl.textContent = "READY";
-  answers.classList.add("hidden");
-  document.querySelectorAll(".answer").forEach(b => b.classList.remove("disabled"));
-  hasAnswered = false;
+
+/* =========================================================
+   PLAY RANDOM BGM1
+========================================================= */
+
+async function playCorrectBGM(){
+
+    stopAudio(bgm2);
+    stopAudio(bgm);
+    stopAudio(bgm3);
+
+
+    /*
+       Clear previous BGM1
+    */
+
+    bgm1Variants.forEach(audio=>{
+
+        audio.onended=null;
+
+        audio.pause();
+
+        audio.currentTime=0;
+
+        audio.volume=.5;
+
+    });
+
+
+    clearBgm1Fade();
+
+
+    const selected=
+        bgm1Variants[
+            Math.floor(
+                Math.random()*
+                bgm1Variants.length
+            )
+        ];
+
+
+    currentBgm1=
+        selected;
+
+
+    selected.currentTime=0;
+
+    selected.volume=.5;
+
+
+    autoNextAfterBgm1=true;
+
+
+    /*
+       Kapag natural na natapos
+       ang BGM1, automatic fade
+       at next question.
+    */
+
+    selected.onended=function(){
+
+        if(
+            currentBgm1!==selected
+        )
+            return;
+
+
+        /*
+           Dahil onended na,
+           maliit na fade transition
+           bago next question.
+        */
+
+        selected.currentTime=0;
+
+        selected.volume=.5;
+
+        selected.play().catch(()=>{});
+
+
+        fadeOutBgm1(()=>{
+
+            if(autoNextAfterBgm1){
+
+                autoNextAfterBgm1=false;
+
+                startNextQuestionAfterBgm1();
+
+            }
+
+        });
+
+    };
+
+
+    await playAudio(selected);
 }
 
-function watchRound(){
-  roomRef.child("round").on("value", snap => {
-    const round = snap.val();
-    if(round === null) return;
 
-    if(currentRound !== null && round !== currentRound){
-      resetUI();
-    }
-    currentRound = round;
-  });
+/* =========================================================
+   NEXT QUESTION AFTER BGM1
+========================================================= */
+
+async function startNextQuestionAfterBgm1(){
+
+    stopTimers();
+
+    stopTimerSound();
+
+    hideTimer();
+
+
+    await startQuizBGM();
+
+
+    nextQuestion();
 }
 
-function watchBuzzer(){
-  roomRef.child("buzzer").on("value", snap => {
-    const data = snap.val();
 
-    if(!data){
-      resetUI();
-      return;
+/* =========================================================
+   QUESTION BANK
+========================================================= */
+const questionBank=[
+
+{
+question:"Which Philippine hero wrote 'Mi Último Adiós'?",
+choices:["Andres Bonifacio","Emilio Aguinaldo","Jose Rizal","Apolinario Mabini"],
+answer:2
+},
+
+{
+question:"What is the capital city of the Philippines?",
+choices:["Cebu City","Davao City","Manila","Baguio City"],
+answer:2
+},
+
+{
+question:"Which planet is known as the Red Planet?",
+choices:["Mars","Venus","Jupiter","Saturn"],
+answer:0
+},
+
+{
+question:"What is H₂O commonly known as?",
+choices:["Salt","Water","Oxygen","Hydrogen"],
+answer:1
+},
+
+{
+question:"How many continents are there in the world?",
+choices:["Five","Six","Seven","Eight"],
+answer:2
+},
+
+{
+question:"Which organ pumps blood throughout the human body?",
+choices:["Lungs","Brain","Heart","Kidneys"],
+answer:2
+},
+
+{
+question:"What is the largest ocean on Earth?",
+choices:["Atlantic Ocean","Indian Ocean","Arctic Ocean","Pacific Ocean"],
+answer:3
+},
+
+{
+question:"Which gas do humans need to breathe?",
+choices:["Oxygen","Carbon dioxide","Hydrogen","Helium"],
+answer:0
+},
+
+{
+question:"What is the smallest prime number?",
+choices:["0","1","2","3"],
+answer:2
+},
+
+{
+question:"Which branch of government is responsible for making laws?",
+choices:["Executive","Judicial","Legislative","Military"],
+answer:2
+},
+
+{
+question:"What is the study of living organisms called?",
+choices:["Geology","Biology","Astronomy","Physics"],
+answer:1
+},
+
+{
+question:"Which instrument is used to measure temperature?",
+choices:["Barometer","Thermometer","Compass","Ruler"],
+answer:1
+},
+
+{
+question:"What is the national currency of the Philippines?",
+choices:["Dollar","Yen","Peso","Won"],
+answer:2
+},
+
+{
+question:"Which sense organ is responsible for vision?",
+choices:["Ear","Eye","Nose","Skin"],
+answer:1
+},
+
+{
+question:"What is the freezing point of water in Celsius?",
+choices:["0°C","10°C","50°C","100°C"],
+answer:0
+},
+
+{
+question:"Which process allows plants to produce their own food?",
+choices:["Respiration","Digestion","Photosynthesis","Fermentation"],
+answer:2
+},
+
+{
+question:"What is the largest planet in our solar system?",
+choices:["Earth","Saturn","Jupiter","Neptune"],
+answer:2
+},
+
+{
+question:"Which country is famous for the Eiffel Tower?",
+choices:["Italy","France","Germany","Spain"],
+answer:1
+},
+
+{
+question:"What is 10 multiplied by 5?",
+choices:["15","40","50","100"],
+answer:2
+},
+
+{
+question:"Which device is commonly used to type text into a computer?",
+choices:["Monitor","Keyboard","Speaker","Printer"],
+answer:1
+},
+
+{
+question:"What does CPU stand for?",
+choices:["Central Processing Unit","Computer Personal Unit","Central Program Utility","Computer Processing User"],
+answer:0
+},
+
+{
+question:"Which of the following is a renewable source of energy?",
+choices:["Coal","Oil","Solar energy","Natural gas"],
+answer:2
+},
+
+{
+question:"What is the basic unit of life?",
+choices:["Organ","Tissue","Cell","Organ system"],
+answer:2
+},
+
+{
+question:"Which Philippine island is the largest by land area?",
+choices:["Luzon","Cebu","Bohol","Siargao"],
+answer:0
+},
+
+{
+question:"What is the main source of energy for Earth?",
+choices:["The Moon","The Sun","The Ocean","The Wind"],
+answer:1
+},
+
+{
+question:"Which of the following is a mammal?",
+choices:["Eagle","Dolphin","Crocodile","Frog"],
+answer:1
+},
+
+{
+question:"What is the chemical symbol for gold?",
+choices:["Ag","Au","Fe","Gd"],
+answer:1
+},
+
+{
+question:"How many months are there in one year?",
+choices:["10","11","12","13"],
+answer:2
+},
+
+{
+question:"Which subject focuses on the study of past events?",
+choices:["History","Chemistry","Biology","Statistics"],
+answer:0
+},
+
+{
+question:"What is 100 divided by 10?",
+choices:["5","10","20","50"],
+answer:1
+},
+
+{
+question:"Who is known as the founder of the Katipunan?",
+choices:["Jose Rizal","Andres Bonifacio","Emilio Aguinaldo","Antonio Luna"],
+answer:1
+},
+
+{
+question:"What is the largest land animal?",
+choices:["Elephant","Giraffe","Hippopotamus","Rhinoceros"],
+answer:0
+},
+
+{
+question:"Which part of a plant usually absorbs water from the soil?",
+choices:["Flower","Leaf","Stem","Root"],
+answer:3
+},
+
+{
+question:"What is the opposite of 'increase'?",
+choices:["Expand","Decrease","Improve","Develop"],
+answer:1
+},
+
+{
+question:"Which mathematical operation is represented by the symbol '+'?",
+choices:["Subtraction","Addition","Division","Multiplication"],
+answer:1
+},
+
+{
+question:"How many degrees are in a right angle?",
+choices:["45°","90°","180°","360°"],
+answer:1
+},
+
+{
+question:"Which of the following is a primary color?",
+choices:["Green","Orange","Purple","Blue"],
+answer:3
+},
+
+{
+question:"What is the main function of the lungs?",
+choices:["Pump blood","Digest food","Exchange oxygen and carbon dioxide","Control movement"],
+answer:2
+},
+
+{
+question:"Which ocean lies between Africa and Australia?",
+choices:["Pacific Ocean","Atlantic Ocean","Indian Ocean","Arctic Ocean"],
+answer:2
+},
+
+{
+question:"What is democracy?",
+choices:["Government by one person","Government by the people","Government by the military","Government without laws"],
+answer:1
+},
+
+{
+question:"Which punctuation mark is used at the end of a question?",
+choices:["Period","Comma","Question mark","Colon"],
+answer:2
+},
+
+{
+question:"What do bees primarily collect from flowers?",
+choices:["Sand","Nectar","Leaves","Roots"],
+answer:1
+},
+
+{
+question:"Which of the following is a liquid?",
+choices:["Ice","Water","Steam","Stone"],
+answer:1
+},
+
+{
+question:"What is the main purpose of education?",
+choices:["To gain knowledge and develop skills","To avoid responsibilities","To memorize everything","To compete with everyone"],
+answer:0
+},
+
+{
+question:"Which organ controls most activities of the human body?",
+choices:["Heart","Liver","Brain","Stomach"],
+answer:2
+},
+
+{
+question:"Which planet is closest to the Sun?",
+choices:["Venus","Earth","Mercury","Mars"],
+answer:2
+},
+
+{
+question:"What is the chemical symbol for oxygen?",
+choices:["O","C","H","N"],
+answer:0
+},
+
+{
+question:"What is the national flower of the Philippines?",
+choices:["Anahaw","Sampaguita","Narra","Molave"],
+answer:1
+},
+
+{
+question:"What is the value of 5 × 5?",
+choices:["15","20","25","30"],
+answer:2
+},
+
+{
+question:"Which field studies the production, distribution, and consumption of goods and services?",
+choices:["Economics","Biology","Geography","Psychology"],
+answer:0
+},
+
+{
+question:"What is artificial intelligence primarily concerned with?",
+choices:["Replacing all human activities","Creating systems capable of performing tasks associated with human intelligence","Increasing internet speed","Storing files without computers"],
+answer:1
+}
+
+];
+
+
+/* =========================================================
+   RANDOM QUIZ
+========================================================= */
+
+let questions=[];
+
+
+function createRandomQuiz(){
+
+    let copy=[
+        ...questionBank
+    ];
+
+
+    for(
+        let i=copy.length-1;
+        i>0;
+        i--
+    ){
+
+        const j=
+            Math.floor(
+                Math.random()*(i+1)
+            );
+
+
+        [
+            copy[i],
+            copy[j]
+        ]=[
+            copy[j],
+            copy[i]
+        ];
+
     }
 
-    if(data.player === player){
-      buzzer.className = "buzzer yellow";
-      buzzer.disabled = true;
-      statusEl.textContent = "FIRST! CHOOSE YOUR ANSWER";
-      answers.classList.remove("hidden");
+
+    questions=copy;
+}
+
+
+/* =========================================================
+   GAME VARIABLES
+========================================================= */
+
+let currentQuestion=0;
+
+let scoreTeam1=0;
+
+let scoreTeam2=0;
+
+let currentTeam=0;
+
+let answered=false;
+
+let answerAttempts=0;
+
+let revealedChoices=0;
+
+
+/*
+currentTeam:
+
+0 = no team
+1 = team 1
+2 = team 2
+3 = team 2 steal
+4 = team 1 steal
+*/
+
+
+/* =========================================================
+   ELEMENTS
+========================================================= */
+
+const connectionStatus=
+    document.getElementById(
+        "connectionStatus"
+    );
+
+const questionElement=
+    document.getElementById(
+        "question"
+    );
+
+const choicesElement=
+    document.getElementById(
+        "choices"
+    );
+
+const progressElement=
+    document.getElementById(
+        "progress"
+    );
+
+const messageElement=
+    document.getElementById(
+        "message"
+    );
+
+const score1Element=
+    document.getElementById(
+        "score1"
+    );
+
+const score2Element=
+    document.getElementById(
+        "score2"
+    );
+
+const team1Box=
+    document.getElementById(
+        "team1Box"
+    );
+
+const team2Box=
+    document.getElementById(
+        "team2Box"
+    );
+
+const buzz1=
+    document.getElementById(
+        "buzz1"
+    );
+
+const buzz2=
+    document.getElementById(
+        "buzz2"
+    );
+
+const timerElement=
+    document.getElementById(
+        "timer"
+    );
+
+const hostRoomInput = document.getElementById("hostRoomInput");
+const hostRoomBtn = document.getElementById("hostRoomBtn");
+const nextQuestionBtn = document.getElementById("nextQuestionBtn");
+
+
+/* =========================================================
+   FIREBASE HOST / REMOTE CONTROLLER
+========================================================= */
+
+hostRoomBtn.onclick = async function(){
+
+    const room = hostRoomInput.value.trim();
+
+    if(!room){
+        alert("Enter the room number used by Player 1 and Player 2.");
+        return;
+    }
+
+    hostRoom = room;
+    hostRoomRef = db.ref("rooms/" + hostRoom);
+
+    try{
+        const snapshot = await hostRoomRef.once("value");
+
+        if(!snapshot.exists()){
+            await hostRoomRef.set({
+                createdAt: firebase.database.ServerValue.TIMESTAMP,
+                round: 1,
+                buzzer: null,
+                answer: null,
+                players: { player1:null, player2:null }
+            });
+        }
+
+        connectionStatus.innerText = "Firebase: Connected • Room " + hostRoom;
+        connectionStatus.classList.add("connected");
+        hostRoomInput.disabled = true;
+        hostRoomBtn.disabled = true;
+        nextQuestionBtn.disabled = false;
+
+        listenFirebaseRoom();
+        await hostRoomRef.update({ round: 1, buzzer:null, answer:null });
+
+    }catch(error){
+        console.error(error);
+        alert("Firebase connection error. Check your Realtime Database rules.");
+    }
+};
+
+nextQuestionBtn.onclick = async function(){
+    if(!hostRoomRef) return;
+    await goToNextQuestion();
+};
+
+async function goToNextQuestion(){
+    stopTimers();
+    stopTimerSound();
+    hideTimer();
+
+    if(currentQuestion >= questions.length - 1){
+        finishQuiz();
+        if(hostRoomRef) await hostRoomRef.update({ buzzer:null, answer:null });
+        return;
+    }
+
+    currentQuestion++;
+    if(hostRoomRef){
+        const snap = await hostRoomRef.child("round").once("value");
+        firebaseRound = Number(snap.val() || 0) + 1;
+        await hostRoomRef.update({
+            round: firebaseRound,
+            buzzer:null,
+            answer:null
+        });
+    }
+
+    loadQuestion();
+}
+
+function listenFirebaseRoom(){
+    if(firebaseListenersReady) return;
+    firebaseListenersReady = true;
+
+    hostRoomRef.child("buzzer").on("value", snapshot=>{
+        const buzzer = snapshot.val();
+        if(!buzzer){
+            currentTeam = 0;
+            team1Box.classList.remove("buzzer-winner","hidden-team");
+            team2Box.classList.remove("buzzer-winner","hidden-team");
+            buzz1.innerText = "Ready";
+            buzz2.innerText = "Ready";
+            return;
+        }
+
+        const team = buzzer.player === "player1" ? 1 : 2;
+        currentTeam = team;
+        stopBuzzTimer();
+        hideTimer();
+
+        team1Box.classList.remove("buzzer-winner","hidden-team");
+        team2Box.classList.remove("buzzer-winner","hidden-team");
+
+        if(team===1){
+            team1Box.classList.add("buzzer-winner");
+            team2Box.classList.add("hidden-team");
+            buzz1.innerText = "🔵 PLAYER 1 BUZZED!";
+            buzz2.innerText = "";
+        }else{
+            team2Box.classList.add("buzzer-winner");
+            team1Box.classList.add("hidden-team");
+            buzz2.innerText = "🔴 PLAYER 2 BUZZED!";
+            buzz1.innerText = "";
+        }
+
+        startAnswerAfterBuzz();
+        sendScreenState();
+    });
+
+    hostRoomRef.child("answer").on("value", snapshot=>{
+        const data = snapshot.val();
+        if(!data || answered) return;
+
+        const index = {A:0,B:1,C:2,D:3}[String(data.answer).toUpperCase()];
+        if(index === undefined) return;
+
+        const buttons = document.querySelectorAll(".choice");
+        const button = buttons[index];
+        if(!button) return;
+
+        selectAnswer(index, button, true);
+    });
+
+    hostRoomRef.child("round").on("value", snapshot=>{
+        const r = Number(snapshot.val() || 1);
+        if(firebaseRound && r !== firebaseRound){
+            firebaseRound = r;
+            currentTeam = 0;
+            answered = false;
+            loadQuestion();
+        }else{
+            firebaseRound = r;
+        }
+    });
+}
+
+/* =========================================================
+   SECOND SCREEN
+========================================================= */
+
+const screenChannel=
+    new BroadcastChannel(
+        "team-quiz-screen"
+    );
+
+
+function sendScreenState(){
+
+    screenChannel.postMessage({
+
+        type:"STATE",
+
+        question:
+            questions[currentQuestion] ||
+            null,
+
+        currentQuestion,
+
+        total:
+            questions.length,
+
+        currentTeam,
+
+        scoreTeam1,
+
+        scoreTeam2,
+
+        answered,
+
+        timerSeconds,
+
+        timerMode,
+
+        revealedChoices,
+
+        answerAttempts,
+
+        selectedAnswer:
+            selectedAnswerIndex,
+
+        answerResult
+
+    });
+}
+
+
+/* =========================================================
+   SECOND SCREEN OPEN
+========================================================= */
+
+document.getElementById(
+    "secondScreenBtn"
+).onclick=function(){
+
+    const second=
+        window.open(
+            "second-screen.html",
+            "TeamQuizSecondScreen",
+            "width=1280,height=720,resizable=yes"
+        );
+
+
+    if(!second){
+
+        alert(
+            "Hindi nabuksan ang Second Screen. "+
+            "I-allow ang pop-ups."
+        );
+
+        return;
+    }
+
+
+    setTimeout(
+        sendScreenState,
+        500
+    );
+};
+
+
+/* =========================================================
+   REVEAL CHOICE
+========================================================= */
+
+function revealNextChoice(){
+
+    if(answered)
+        return;
+
+
+    if(revealedChoices>=4)
+        return;
+
+
+    revealedChoices++;
+
+
+    const buttons=
+        document.querySelectorAll(
+            ".choice"
+        );
+
+
+    const index=
+        revealedChoices-1;
+
+
+    if(buttons[index]){
+
+        buttons[index]
+            .classList.add(
+                "revealed"
+            );
+    }
+
+
+    /*
+       ONLY after 4 choices,
+       start 10-second buzzer.
+    */
+
+    if(revealedChoices===4){
+
+        startBuzzTimer();
+
+    }
+
+
+    sendScreenState();
+}
+
+
+/* =========================================================
+   ENTER = NEXT CHOICE
+========================================================= */
+
+document.addEventListener(
+    "keydown",
+    function(event){
+
+        if(
+            event.target.tagName==="INPUT" ||
+            event.target.tagName==="TEXTAREA"
+        )
+            return;
+
+
+        if(event.key==="Enter"){
+
+            event.preventDefault();
+
+            revealNextChoice();
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   BUZZER
+========================================================= */
+
+function teamBuzz(team){
+
+    if(answered)
+        return;
+
+
+    if(revealedChoices<4)
+        return;
+
+
+    if(currentTeam===0){
+
+        currentTeam=team;
+
+
+        stopBuzzTimer();
+
+
+        if(team===1){
+
+            team1Box.classList.add(
+                "buzzer-winner"
+            );
+
+
+            team2Box.classList.add(
+                "hidden-team"
+            );
+
+
+            buzz1.innerText=
+                "🔵 TEAM 1 BUZZED!";
+
+
+            buzz2.innerText="";
+
+
+        }else{
+
+            team2Box.classList.add(
+                "buzzer-winner"
+            );
+
+
+            team1Box.classList.add(
+                "hidden-team"
+            );
+
+
+            buzz2.innerText=
+                "🔴 TEAM 2 BUZZED!";
+
+
+            buzz1.innerText="";
+        }
+
+
+        startAnswerAfterBuzz();
+
+
+        sendScreenState();
+
+
+        return;
+    }
+
+
+    /* TEAM 2 STEAL */
+
+    if(
+        currentTeam===3 &&
+        team===2
+    ){
+
+        currentTeam=2;
+
+
+        team1Box.classList.add(
+            "hidden-team"
+        );
+
+
+        team2Box.classList.remove(
+            "hidden-team"
+        );
+
+
+        team2Box.classList.add(
+            "buzzer-winner"
+        );
+
+
+        buzz2.innerText=
+            "🔴 TEAM 2 STEAL!";
+
+
+        startAnswerAfterBuzz();
+
+
+        sendScreenState();
+
+
+        return;
+    }
+
+
+    /* TEAM 1 STEAL */
+
+    if(
+        currentTeam===4 &&
+        team===1
+    ){
+
+        currentTeam=1;
+
+
+        team2Box.classList.add(
+            "hidden-team"
+        );
+
+
+        team1Box.classList.remove(
+            "hidden-team"
+        );
+
+
+        team1Box.classList.add(
+            "buzzer-winner"
+        );
+
+
+        buzz1.innerText=
+            "🔵 TEAM 1 STEAL!";
+
+
+        startAnswerAfterBuzz();
+
+
+        sendScreenState();
+    }
+}
+
+
+/* =========================================================
+   ANSWER VARIABLES
+========================================================= */
+
+let selectedAnswerIndex=-1;
+
+let answerResult="";
+
+
+/* =========================================================
+   ANSWER AFTER BUZZ
+========================================================= */
+
+function startAnswerAfterBuzz(){
+
+    stopTimers();
+
+
+    document
+        .querySelectorAll(".choice")
+        .forEach(button=>{
+
+            if(
+                button.classList.contains(
+                    "revealed"
+                )
+            ){
+
+                button.disabled=false;
+
+            }
+
+        });
+
+
+    startAnswerTimer();
+
+
+    sendScreenState();
+}
+
+
+/* =========================================================
+   LOAD QUESTION
+========================================================= */
+
+function loadQuestion(){
+
+    if(
+        currentQuestion>=
+        questions.length
+    ){
+
+        finishQuiz();
+
+        return;
+    }
+
+
+    currentTeam=0;
+
+    answered=false;
+
+    answerAttempts=0;
+
+    revealedChoices=0;
+
+    selectedAnswerIndex=-1;
+
+    answerResult="";
+
+
+    autoNextAfterBgm1=false;
+
+
+    if(currentBgm1){
+
+        currentBgm1.onended=null;
+
+    }
+
+
+    team1Box.classList.remove(
+        "buzzer-winner",
+        "hidden-team"
+    );
+
+
+    team2Box.classList.remove(
+        "buzzer-winner",
+        "hidden-team"
+    );
+
+
+    buzz1.innerText="Ready";
+
+    buzz2.innerText="Ready";
+
+
+    progressElement.innerText=
+        "Question "+
+        (currentQuestion+1)+
+        " / "+
+        questions.length;
+
+
+    const q=
+        questions[currentQuestion];
+
+
+    questionElement.innerText=
+        q.question;
+
+
+    choicesElement.innerHTML="";
+
+
+    const letters=[
+        "A",
+        "B",
+        "C",
+        "D"
+    ];
+
+
+    q.choices.forEach(
+        (choice,index)=>{
+
+            const button=
+                document.createElement(
+                    "button"
+                );
+
+
+            button.className=
+                "choice";
+
+
+            button.innerText=
+                letters[index]+
+                ". "+
+                choice;
+
+
+            button.disabled=true;
+
+
+            button.onclick=function(){
+
+                selectAnswer(
+                    index,
+                    button
+                );
+
+            };
+
+
+            choicesElement.appendChild(
+                button
+            );
+
+        }
+    );
+
+
+    stopTimers();
+
+    hideTimer();
+
+
+    messageElement.innerText="";
+
+
+    sendScreenState();
+}
+
+
+/* =========================================================
+   TIMERS
+========================================================= */
+
+let buzzTimer=null;
+
+let answerTimer=null;
+
+let timerSeconds=0;
+
+let timerMode="";
+
+
+function stopTimers(){
+
+    if(buzzTimer){
+
+        clearInterval(
+            buzzTimer
+        );
+
+        buzzTimer=null;
+    }
+
+
+    if(answerTimer){
+
+        clearInterval(
+            answerTimer
+        );
+
+        answerTimer=null;
+    }
+}
+
+
+function stopBuzzTimer(){
+
+    if(buzzTimer){
+
+        clearInterval(
+            buzzTimer
+        );
+
+        buzzTimer=null;
+    }
+}
+
+
+function stopTimerSound(){
+
+    timerSound.onended=null;
+
+    timerSound.pause();
+
+    timerSound.currentTime=0;
+}
+
+
+function showTimer(
+    seconds,
+    mode
+){
+
+    timerMode=mode;
+
+    timerSeconds=seconds;
+
+
+    timerElement.style.display=
+        "block";
+
+
+    timerElement.innerText=
+        seconds;
+
+
+    if(mode==="buzz"){
+
+        timerElement.style.borderColor=
+            "#f1c40f";
+
+        timerElement.style.color=
+            "#f1c40f";
+
     }else{
-      buzzer.className = "buzzer red";
-      buzzer.disabled = true;
-      statusEl.textContent = "TOO LATE!";
-      answers.classList.add("hidden");
+
+        timerElement.style.borderColor=
+            "#e67e22";
+
+        timerElement.style.color=
+            "#e67e22";
     }
-  });
 }
 
-buzzer.onclick = async () => {
-  if(buzzer.disabled) return;
 
-  const ref = roomRef.child("buzzer");
+function hideTimer(){
 
-  try{
-    const result = await ref.transaction(current => {
-      if(current === null){
-        return {
-          player: player,
-          time: Date.now()
-        };
-      }
-      return;
-    });
+    timerElement.style.display=
+        "none";
 
-    if(!result.committed){
-      buzzer.className = "buzzer red";
-      buzzer.disabled = true;
-      statusEl.textContent = "TOO LATE!";
+
+    timerSeconds=0;
+
+    timerMode="";
+}
+
+
+/* =========================================================
+   BUZZ TIMER
+========================================================= */
+
+function startBuzzTimer(){
+
+    stopTimers();
+
+
+    showTimer(
+        10,
+        "buzz"
+    );
+
+
+    buzzTimer=
+        setInterval(()=>{
+
+            timerSeconds--;
+
+            timerElement.innerText=
+                timerSeconds;
+
+
+            sendScreenState();
+
+
+            if(timerSeconds<=0){
+
+                clearInterval(
+                    buzzTimer
+                );
+
+
+                buzzTimer=null;
+
+
+                hideTimer();
+
+
+                messageElement.innerText="";
+
+
+                setTimeout(()=>{
+
+                    if(!answered)
+                        nextQuestion();
+
+                },500);
+
+            }
+
+        },1000);
+}
+
+
+/* =========================================================
+   ANSWER TIMER
+========================================================= */
+
+function startAnswerTimer(){
+
+    stopTimers();
+
+
+    showTimer(
+        10,
+        "answer"
+    );
+
+
+    timerSound.currentTime=0;
+
+
+    timerSound
+        .play()
+        .catch(()=>{});
+
+
+    answerTimer=
+        setInterval(()=>{
+
+            timerSeconds--;
+
+            timerElement.innerText=
+                timerSeconds;
+
+
+            sendScreenState();
+
+
+            if(timerSeconds<=0){
+
+                clearInterval(
+                    answerTimer
+                );
+
+
+                answerTimer=null;
+
+
+                handleAnswerTimeout();
+
+            }
+
+        },1000);
+}
+
+
+/* =========================================================
+   ANSWER TIMEOUT
+========================================================= */
+
+function handleAnswerTimeout(){
+
+    if(answered)
+        return;
+
+
+    stopTimers();
+
+    stopTimerSound();
+
+    hideTimer();
+
+
+    document
+        .querySelectorAll(".choice")
+        .forEach(
+            b=>b.disabled=true
+        );
+
+
+    answerAttempts++;
+
+
+    wrongSound.currentTime=0;
+
+    wrongSound
+        .play()
+        .catch(()=>{});
+
+
+    if(answerAttempts>=3){
+
+        revealCorrectAnswer();
+
+        return;
     }
-  }catch(err){
-    console.error(err);
-    statusEl.textContent = "Connection error.";
-  }
-};
 
-document.querySelectorAll(".answer").forEach(button => {
-  button.onclick = async () => {
-    if(hasAnswered) return;
 
-    const snap = await roomRef.child("buzzer").once("value");
-    const buz = snap.val();
+    prepareNextAttempt();
+}
 
-    if(!buz || buz.player !== player) return;
 
-    hasAnswered = true;
-    document.querySelectorAll(".answer").forEach(b => b.classList.add("disabled"));
+/* =========================================================
+   REVEAL CORRECT ANSWER
+========================================================= */
 
-    await roomRef.child("answer").set({
-      player: player,
-      answer: button.dataset.answer,
-      round: currentRound,
-      time: Date.now()
-    });
+function revealCorrectAnswer(){
 
-    statusEl.textContent = "ANSWER SENT: " + button.dataset.answer;
-  };
-});
+    const q=
+        questions[currentQuestion];
 
-$("leaveBtn").onclick = async () => {
-  try{
-    if(playerRef) await playerRef.remove();
-  }catch(err){
-    console.error(err);
-  }
-  location.reload();
-};
 
-db.ref(".info/connected").on("value", snap => {
-  offline.textContent = snap.val() === true ? "" : "OFFLINE";
-});
+    const buttons=
+        document.querySelectorAll(
+            ".choice"
+        );
+
+
+    buttons.forEach(
+        (button,index)=>{
+
+            button.disabled=true;
+
+
+            if(
+                index===q.answer
+            ){
+
+                button.classList.add(
+                    "correct"
+                );
+
+            }
+
+        }
+    );
+
+
+    selectedAnswerIndex=
+        q.answer;
+
+
+    answerResult=
+        "correct";
+
+
+    answered=true;
+
+
+    stopTimers();
+
+    stopTimerSound();
+
+    hideTimer();
+
+
+    sendScreenState();
+}
+
+
+/* =========================================================
+   NEXT ATTEMPT / STEAL
+========================================================= */
+
+function prepareNextAttempt(){
+
+    if(answerAttempts>=3){
+
+        revealCorrectAnswer();
+
+        return;
+    }
+
+
+    if(
+        currentTeam===1 ||
+        currentTeam===4
+    ){
+
+        currentTeam=3;
+
+
+        team1Box.classList.add(
+            "hidden-team"
+        );
+
+
+        team2Box.classList.remove(
+            "hidden-team"
+        );
+
+
+        team2Box.classList.add(
+            "buzzer-winner"
+        );
+
+
+        buzz1.innerText=
+            "❌ WRONG";
+
+
+        buzz2.innerText=
+            "🔴 STEAL";
+
+    }else{
+
+        currentTeam=4;
+
+
+        team2Box.classList.add(
+            "hidden-team"
+        );
+
+
+        team1Box.classList.remove(
+            "hidden-team"
+        );
+
+
+        team1Box.classList.add(
+            "buzzer-winner"
+        );
+
+
+        buzz2.innerText=
+            "❌ WRONG";
+
+
+        buzz1.innerText=
+            "🔵 STEAL";
+    }
+
+
+    stopTimers();
+
+    hideTimer();
+
+
+    sendScreenState();
+}
+
+
+/* =========================================================
+   SELECT ANSWER
+========================================================= */
+
+function selectAnswer(
+    index,
+    button,
+    fromRemote=false
+){
+
+    if(answered)
+        return;
+
+    if(!fromRemote)
+        return;
+
+
+    if(currentTeam===0)
+        return;
+
+
+    if(
+        !fromRemote &&
+        !button.classList.contains(
+            "revealed"
+        )
+    )
+        return;
+
+
+    const q=
+        questions[currentQuestion];
+
+
+    const buttons=
+        document.querySelectorAll(
+            ".choice"
+        );
+
+
+    selectedAnswerIndex=index;
+
+
+    /* =====================================================
+       CORRECT
+    ===================================================== */
+
+    if(index===q.answer){
+
+        answered=true;
+
+        answerResult=
+            "correct";
+
+
+        stopTimers();
+
+        stopTimerSound();
+
+        hideTimer();
+
+
+        button.classList.remove(
+            "revealed"
+        );
+
+
+        button.classList.add(
+            "correct"
+        );
+
+
+        buttons.forEach(
+            b=>{
+
+                b.disabled=true;
+
+            }
+        );
+
+
+        correctSound.currentTime=0;
+
+
+        correctSound
+            .play()
+            .catch(()=>{});
+
+
+        /*
+           Start random BGM1
+        */
+
+        playCorrectBGM();
+
+
+        if(
+            currentTeam===1 ||
+            currentTeam===4
+        ){
+
+            scoreTeam1++;
+
+            score1Element.innerText=
+                scoreTeam1;
+
+        }else{
+
+            scoreTeam2++;
+
+            score2Element.innerText=
+                scoreTeam2;
+        }
+
+
+        sendScreenState();
+
+
+        return;
+    }
+
+
+    /* =====================================================
+       WRONG
+    ===================================================== */
+
+    answerResult=
+        "wrong";
+
+
+    button.classList.add(
+        "wrong"
+    );
+
+
+    button.disabled=true;
+
+
+    wrongSound.currentTime=0;
+
+
+    wrongSound
+        .play()
+        .catch(()=>{});
+
+
+    stopTimers();
+
+    stopTimerSound();
+
+
+    answerAttempts++;
+
+
+    if(answerAttempts>=3){
+
+        revealCorrectAnswer();
+
+        return;
+    }
+
+
+    prepareNextAttempt();
+
+
+    sendScreenState();
+}
+
+
+/* =========================================================
+   HOST NEXT QUESTION SHORTCUT
+   SPACEBAR = NEXT QUESTION
+========================================================= */
+
+document.addEventListener(
+    "keydown",
+    function(event){
+
+        if(event.code!=="Space")
+            return;
+
+        if(
+            event.target.tagName==="INPUT" ||
+            event.target.tagName==="TEXTAREA"
+        )
+            return;
+
+        event.preventDefault();
+
+        if(!hostRoom)
+            return;
+
+        nextQuestion();
+    }
+);
+
+/* =========================================================
+   NEXT QUESTION
+========================================================= */
+
+function nextQuestion(){
+    if(!hostRoomRef) return;
+    goToNextQuestion();
+}
+
+/* =========================================================
+   FINISH
+========================================================= */
+
+function finishQuiz(){
+
+    stopAudio(bgm);
+
+    stopAudio(bgm1);
+
+    stopAudio(bgm2);
+
+    stopAudio(bgm3);
+
+
+    bgm1Variants.forEach(
+        audio=>{
+
+            audio.onended=null;
+
+            audio.pause();
+
+            audio.currentTime=0;
+
+        }
+    );
+
+
+    currentBgm1=null;
+
+    autoNextAfterBgm1=false;
+
+
+    clearBgm1Fade();
+
+
+    stopTimers();
+
+    stopTimerSound();
+
+    hideTimer();
+
+
+    questionElement.innerText="";
+
+    choicesElement.innerHTML="";
+
+    progressElement.innerText="";
+
+
+    messageElement.innerText=
+        "QUIZ FINISHED";
+
+
+    team1Box.style.display=
+        "none";
+
+
+    team2Box.style.display=
+        "none";
+
+
+    nextQuestionBtn.disabled=true;
+
+
+    sendScreenState();
+}
+
+
+/* =========================================================
+   SECOND SCREEN REQUEST
+========================================================= */
+
+screenChannel.onmessage=
+    function(event){
+
+        if(
+            event.data &&
+            event.data.type===
+            "REQUEST_STATE"
+        ){
+
+            sendScreenState();
+
+        }
+
+    };
+
+
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
+createRandomQuiz();
+
+loadQuestion();
+
 </script>
+
 </body>
 </html>
