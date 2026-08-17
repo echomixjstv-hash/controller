@@ -2,353 +2,603 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Quiz Player Controller</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Team Quiz Remote</title>
 
 <style>
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;width:100%;height:100%;font-family:Arial,sans-serif;background:#101114;color:#fff}
-body{display:flex;justify-content:center;align-items:center;overflow:hidden}
-#app{width:100%;max-width:620px;height:100%;min-height:100dvh;padding:22px;display:flex;align-items:center;justify-content:center}
-.screen{width:100%;display:none;flex-direction:column;align-items:center;text-align:center;gap:18px}
-.screen.active{display:flex}
-h1{font-size:30px;margin:0 0 8px}
-.sub{opacity:.75;font-size:17px}
-input{width:100%;max-width:420px;padding:18px;border:0;border-radius:14px;font-size:24px;text-align:center;outline:0}
-.primary{width:100%;max-width:420px;padding:19px;border:0;border-radius:14px;background:#2196f3;color:#fff;font-size:21px;font-weight:700}
-.primary:active,.teamPick:active,.buzzer:active,.answer:active{transform:scale(.97)}
-.error{min-height:24px;color:#ff7777;font-weight:700}
-.teamRow{display:flex;gap:18px;width:100%;justify-content:center}
-.teamPick{width:150px;height:150px;border:0;border-radius:50%;color:#fff;font-size:20px;font-weight:800;box-shadow:0 8px 22px #0008}
-.teamA{background:#2196f3}
-.teamB{background:#e53935}
-.room{font-size:20px;font-weight:700;opacity:.8}
-.buzzer{position:relative;width:min(76vw,330px);height:min(76vw,330px);border:0;border-radius:50%;background:#35b94a;color:#fff;font-size:31px;font-weight:900;box-shadow:0 10px 35px #0008;touch-action:manipulation}
-.buzzer.yellow{background:#ffd600;color:#111;animation:blink .55s infinite}
-.buzzer.red{background:#e53935;color:#fff;cursor:not-allowed}
-.buzzer.red:after{content:"✕";position:absolute;left:50%;top:50%;transform:translate(-50%,-54%);font-size:145px;font-weight:900;line-height:1;opacity:.9}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
-.status{min-height:28px;font-size:20px;font-weight:800}
-.answers{display:grid;grid-template-columns:1fr 1fr;gap:13px;width:100%;max-width:420px}
-.answer{height:92px;border:0;border-radius:14px;color:#fff;font-size:40px;font-weight:900;touch-action:manipulation}
-.answer.a{background:#e53935}.answer.b{background:#1e88e5}.answer.c{background:#fbc02d;color:#111}.answer.d{background:#8e24aa}
-.answer.disabled{opacity:.45;pointer-events:none}
-.hidden{display:none!important}
-.leave{border:0;border-radius:10px;padding:11px 22px;background:#3a3d43;color:#fff;font-size:16px}
-.offline{color:#ff7070;font-size:15px;min-height:18px}
-@media(max-width:380px){
- .teamPick{width:125px;height:125px;font-size:18px}
- .buzzer{width:68vw;height:68vw}
- .buzzer.red:after{font-size:120px}
+*{
+    box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;
+}
+
+html,body{
+    margin:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    font-family:Arial,sans-serif;
+    background:#101010;
+    color:#fff;
+}
+
+body{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.screen{
+    width:min(720px,96vw);
+    height:min(900px,96vh);
+    padding:14px;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+}
+
+h1{
+    margin:0;
+    text-align:center;
+    font-size:clamp(22px,6vw,38px);
+}
+
+.status{
+    min-height:24px;
+    text-align:center;
+    font-size:15px;
+    color:#f1c40f;
+}
+
+.panel{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    flex:1;
+}
+
+input{
+    width:100%;
+    border:0;
+    outline:0;
+    border-radius:14px;
+    padding:16px;
+    font-size:24px;
+    text-align:center;
+}
+
+.main-btn{
+    width:100%;
+    min-height:70px;
+    border:0;
+    border-radius:16px;
+    background:#3498db;
+    color:#fff;
+    font-size:24px;
+    font-weight:bold;
+}
+
+.team-select{
+    flex:1;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+}
+
+.team-btn{
+    border:0;
+    border-radius:20px;
+    color:#fff;
+    font-size:clamp(30px,8vw,60px);
+    font-weight:bold;
+    box-shadow:0 6px 0 #000;
+    touch-action:manipulation;
+}
+
+.team-a{
+    background:#1769ff;
+}
+
+.team-b{
+    background:#e74c3c;
+}
+
+.team-btn:active,
+.choice-btn:active{
+    transform:translateY(5px);
+    box-shadow:0 1px 0 #000;
+}
+
+.choice-grid{
+    flex:1;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+}
+
+.choice-btn{
+    border:0;
+    border-radius:20px;
+    background:#333;
+    color:#fff;
+    font-size:clamp(42px,12vw,82px);
+    font-weight:bold;
+    box-shadow:0 6px 0 #000;
+    touch-action:manipulation;
+}
+
+button:disabled{
+    opacity:.28;
+    pointer-events:none;
+}
+
+.hidden{
+    display:none !important;
+}
+
+.team-name{
+    text-align:center;
+    font-size:clamp(24px,7vw,42px);
+    font-weight:bold;
+}
+
+.change-team{
+    min-height:50px;
+    border:0;
+    border-radius:12px;
+    background:#555;
+    color:white;
+    font-size:18px;
+    font-weight:bold;
+}
+
+@media(max-width:480px){
+    .screen{
+        width:100%;
+        height:100%;
+        padding:9px;
+        gap:9px;
+    }
+
+    .team-select,
+    .choice-grid{
+        gap:9px;
+    }
 }
 </style>
 </head>
 
 <body>
-<div id="app">
 
-  <!-- ROOM -->
-  <section id="roomScreen" class="screen active">
-    <h1>ENTER ROOM NUMBER</h1>
-    <div class="sub">Enter the room number given by the host.</div>
-    <input id="roomInput" type="text" inputmode="numeric" autocomplete="off"
-           placeholder="Room Number" maxlength="20">
-    <button id="joinBtn" class="primary">ENTER ROOM</button>
-    <div id="roomError" class="error"></div>
-  </section>
+<div class="screen">
 
-  <!-- TEAM -->
-  <section id="teamScreen" class="screen">
-    <h1>SELECT TEAM</h1>
-    <div id="roomText" class="room"></div>
-    <div class="sub">Choose your team.</div>
-    <div class="teamRow">
-      <button id="teamA" class="teamPick teamA">TEAM A</button>
-      <button id="teamB" class="teamPick teamB">TEAM B</button>
-    </div>
-    <div id="teamError" class="error"></div>
-  </section>
+    <h1>🏆 TEAM QUIZ REMOTE</h1>
 
-  <!-- CONTROLLER -->
-  <section id="gameScreen" class="screen">
-    <div id="gameRoom" class="room"></div>
-    <button id="buzzer" class="buzzer">TEAM</button>
-    <div id="status" class="status">READY</div>
-
-    <div id="answers" class="answers">
-      <button class="answer a" data-answer="A">A</button>
-      <button class="answer b" data-answer="B">B</button>
-      <button class="answer c" data-answer="C">C</button>
-      <button class="answer d" data-answer="D">D</button>
+    <div id="status" class="status">
+        Enter Room Number
     </div>
 
-    <div id="offline" class="offline"></div>
-    <button id="leaveBtn" class="leave">LEAVE ROOM</button>
-  </section>
+    <!-- STEP 1: ROOM NUMBER -->
+    <section id="roomScreen" class="panel">
+
+        <input
+            id="room"
+            type="text"
+            inputmode="numeric"
+            autocomplete="off"
+            placeholder="ROOM NUMBER">
+
+        <button id="roomBtn" class="main-btn">
+            ENTER ROOM
+        </button>
+
+    </section>
+
+
+    <!-- STEP 2: TEAM SELECTION -->
+    <section id="teamScreen" class="panel hidden">
+
+        <div class="team-name">
+            SELECT YOUR TEAM
+        </div>
+
+        <div class="team-select">
+
+            <button
+                id="teamA"
+                class="team-btn team-a">
+                TEAM A
+            </button>
+
+            <button
+                id="teamB"
+                class="team-btn team-b">
+                TEAM B
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- STEP 3: CONTROLLER -->
+    <section id="controllerScreen" class="panel hidden">
+
+        <div id="selectedTeam" class="team-name">
+            TEAM A
+        </div>
+
+        <div class="choice-grid">
+
+            <button class="choice-btn" data-command="A">A</button>
+            <button class="choice-btn" data-command="B">B</button>
+            <button class="choice-btn" data-command="C">C</button>
+            <button class="choice-btn" data-command="D">D</button>
+
+        </div>
+
+        <button id="changeTeam" class="change-team">
+            CHANGE TEAM
+        </button>
+
+    </section>
 
 </div>
 
 <audio id="pressSound" preload="auto">
-  <source src="sound.mp3" type="audio/mpeg">
+    <source src="sound.mp3" type="audio/mpeg">
 </audio>
+
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
 <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyAKzNpD9BeiT-eymm0e1l_U3p_dggPrbEk",
-  authDomain: "jess-santi.firebaseapp.com",
-  databaseURL: "https://jess-santi-default-rtdb.firebaseio.com/",
-  projectId: "jess-santi",
-  storageBucket: "jess-santi.firebasestorage.app",
-  messagingSenderId: "457562056307",
-  appId: "1:457562056307:web:1be6c76bc8bdb5bd0aac06",
-  measurementId: "G-SKL83F1C8B"
+
+const firebaseConfig={
+    apiKey:"AIzaSyAKzNpD9BeiT-eymm0e1l_U3p_dggPrbEk",
+    authDomain:"jess-santi.firebaseapp.com",
+    databaseURL:"https://jess-santi-default-rtdb.firebaseio.com/",
+    projectId:"jess-santi",
+    storageBucket:"jess-santi.firebasestorage.app",
+    messagingSenderId:"457562056307",
+    appId:"1:457562056307:web:1be6c76bc8bdb5bd0aac06",
+    measurementId:"G-SKL83F1C8B"
 };
 
 firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
 
-let room="";
-let team="";
+const db=firebase.database();
+
+const roomScreen=document.getElementById("roomScreen");
+const teamScreen=document.getElementById("teamScreen");
+const controllerScreen=document.getElementById("controllerScreen");
+
+const roomInput=document.getElementById("room");
+const roomBtn=document.getElementById("roomBtn");
+
+const teamA=document.getElementById("teamA");
+const teamB=document.getElementById("teamB");
+
+const selectedTeam=document.getElementById("selectedTeam");
+const changeTeam=document.getElementById("changeTeam");
+
+const status=document.getElementById("status");
+const sound=document.getElementById("pressSound");
+
+const choiceButtons=
+    document.querySelectorAll(".choice-btn");
+
 let roomRef=null;
-let currentRound=null;
+let roomNumber="";
+let selectedTeamValue="";
+let currentRound=1;
 let localLock=false;
-let lastAcceptedTimestamp=0;
 
-const $=id=>document.getElementById(id);
-const roomScreen=$("roomScreen");
-const teamScreen=$("teamScreen");
-const gameScreen=$("gameScreen");
-const buzzer=$("buzzer");
-const statusEl=$("status");
-const answers=$("answers");
-const offline=$("offline");
-const sound=$("pressSound");
-const answerButtons=document.querySelectorAll(".answer");
 
-function show(screen){
-  [roomScreen,teamScreen,gameScreen].forEach(x=>x.classList.remove("active"));
-  screen.classList.add("active");
+/* =========================================
+   STATUS
+========================================= */
+
+function setStatus(text,color="#f1c40f"){
+
+    status.textContent=text;
+    status.style.color=color;
+
 }
 
-function cleanRoom(s){
-  return s.replace(/[^a-zA-Z0-9_-]/g,"").slice(0,20);
-}
 
-$("roomInput").addEventListener("input",e=>{
-  e.target.value=cleanRoom(e.target.value);
-});
+/* =========================================
+   STEP 1 — ENTER ROOM
+========================================= */
 
-/* ROOM */
-$("joinBtn").onclick=async()=>{
-  const value=cleanRoom($("roomInput").value.trim());
-  $("roomError").textContent="";
-  if(!value){
-    $("roomError").textContent="Enter a room number.";
-    return;
-  }
+roomBtn.onclick=async function(){
 
-  room=value;
-  roomRef=db.ref("rooms/"+room);
+    roomNumber=
+        roomInput.value.trim();
 
-  try{
-    const snap=await roomRef.once("value");
+    if(!roomNumber){
 
-    if(!snap.exists()){
-      $("roomError").textContent="Room not found. Ask the host for the correct room number.";
-      return;
-    }
+        setStatus(
+            "Please enter the Room Number.",
+            "#e74c3c"
+        );
 
-    $("roomText").textContent="ROOM "+room;
-    show(teamScreen);
-
-  }catch(err){
-    console.error(err);
-    $("roomError").textContent="Could not connect to the room.";
-  }
-};
-
-/* ROUND */
-function watchRound(){
-  roomRef.child("round").on("value",snap=>{
-    const round=snap.val();
-    if(round===null)return;
-
-    if(currentRound!==null && round!==currentRound){
-      resetController();
-    }
-
-    currentRound=round;
-  });
-}
-
-/* TEAM SELECTION */
-$("teamA").onclick=()=>selectTeam("TEAM_A");
-$("teamB").onclick=()=>selectTeam("TEAM_B");
-
-function selectTeam(selected){
-  team=selected;
-
-  $("gameRoom").textContent=
-    "ROOM "+room+" • "+(team==="TEAM_A"?"TEAM A":"TEAM B");
-
-  buzzer.textContent=
-    team==="TEAM_A"?"TEAM A":"TEAM B";
-
-  resetController();
-  show(gameScreen);
-  watchRound();
-}
-
-/* RESET UI FOR A NEW ROUND */
-function resetController(){
-  localLock=false;
-  buzzer.className="buzzer";
-  buzzer.disabled=false;
-  buzzer.textContent=team==="TEAM_A"?"TEAM A":"TEAM B";
-  statusEl.textContent="READY";
-  answerButtons.forEach(b=>{
-    b.classList.remove("disabled");
-    b.disabled=false;
-  });
-}
-
-/*
-  BUZZER:
-  First successful team/device press gets sound.
-  All other presses during the 1-second Firebase lock
-  do not get sound.
-*/
-buzzer.onclick=async()=>{
-  if(buzzer.disabled || localLock || !roomRef || !team)return;
-
-  localLock=true;
-
-  const ref=roomRef.child("remoteButton");
-
-  try{
-    const result=await ref.transaction(current=>{
-      const now=Date.now();
-
-      if(current && Number(current.lockUntil||0)>now){
         return;
-      }
-
-      return {
-        command:"BUZZ",
-        team:team,
-        round:currentRound,
-        timestamp:now,
-        lockUntil:now+1000
-      };
-    });
-
-    if(result.committed){
-      buzzer.className="buzzer yellow";
-      buzzer.disabled=true;
-      statusEl.textContent="FIRST! CHOOSE YOUR ANSWER";
-
-      try{
-        sound.currentTime=0;
-        await sound.play();
-      }catch(e){
-        console.log("Audio playback blocked:",e);
-      }
-    }else{
-      buzzer.className="buzzer red";
-      buzzer.disabled=true;
-      statusEl.textContent="TOO LATE!";
     }
 
-  }catch(err){
-    console.error(err);
-    statusEl.textContent="Connection error.";
-  }
+    roomBtn.disabled=true;
 
-  setTimeout(()=>{
-    /*
-      After 1 second the buttons are active again.
-      The buzzer returns to ready so another round/press
-      can be sent without refreshing this remote.
-    */
-    localLock=false;
-    buzzer.className="buzzer";
-    buzzer.disabled=false;
-    statusEl.textContent="READY";
-  },1000);
+    setStatus("Connecting to Room...");
+
+    roomRef=
+        db.ref("rooms/"+roomNumber);
+
+    try{
+
+        /*
+           Check that Firebase can be reached
+           and read the current quiz round.
+        */
+
+        const snap=
+            await roomRef.child("round").once("value");
+
+        currentRound=
+            Number(snap.val()||1);
+
+        roomRef.child("round").on(
+            "value",
+            snap=>{
+                currentRound=
+                    Number(snap.val()||1);
+            }
+        );
+
+        setStatus(
+            "Room "+roomNumber+" connected.",
+            "#00e676"
+        );
+
+        roomScreen.classList.add("hidden");
+        teamScreen.classList.remove("hidden");
+
+    }catch(error){
+
+        console.error(error);
+
+        roomBtn.disabled=false;
+
+        setStatus(
+            "Could not connect to Firebase.",
+            "#e74c3c"
+        );
+    }
+
 };
 
-/*
-  A/B/C/D:
-  All four are active after team selection.
-  First accepted answer press also uses the same
-  Firebase 1-second global lock and sound.
-*/
-answerButtons.forEach(button=>{
-  button.onclick=async()=>{
-    if(localLock || !roomRef || !team)return;
+
+/* =========================================
+   STEP 2 — SELECT TEAM
+========================================= */
+
+async function selectTeam(team){
+
+    if(!roomRef || selectedTeamValue)
+        return;
+
+    selectedTeamValue=team;
+
+    /*
+       The selected team is stored with the remote
+       session. This does not lock the other device's
+       team selection.
+    */
+
+    selectedTeam.textContent=
+        team==="TEAM_A"
+        ? "TEAM A"
+        : "TEAM B";
+
+    selectedTeam.style.color=
+        team==="TEAM_A"
+        ? "#4d8dff"
+        : "#ff526b";
+
+    teamScreen.classList.add("hidden");
+    controllerScreen.classList.remove("hidden");
+
+    setStatus(
+        "Connected • "+selectedTeam.textContent,
+        "#00e676"
+    );
+
+    choiceButtons.forEach(
+        button=>button.disabled=false
+    );
+}
+
+teamA.onclick=()=>{
+    selectTeam("TEAM_A");
+};
+
+teamB.onclick=()=>{
+    selectTeam("TEAM_B");
+};
+
+
+/* =========================================
+   STEP 3 — SEND A/B/C/D
+========================================= */
+
+async function sendChoice(command){
+
+    if(
+        !roomRef ||
+        !selectedTeamValue ||
+        localLock
+    )
+        return;
 
     localLock=true;
 
-    answerButtons.forEach(b=>b.classList.add("disabled"));
+    /*
+       The 1-second global lock is represented in
+       Firebase. The transaction guarantees that only
+       the first device to press is accepted.
+    */
 
-    const ref=roomRef.child("remoteButton");
+    choiceButtons.forEach(
+        button=>button.disabled=true
+    );
 
     try{
-      const result=await ref.transaction(current=>{
-        const now=Date.now();
 
-        if(current && Number(current.lockUntil||0)>now){
-          return;
+        const remoteRef=
+            roomRef.child("remoteButton");
+
+        const result=
+            await remoteRef.transaction(
+                currentData=>{
+
+                    const now=Date.now();
+
+                    /*
+                       Someone already pressed during
+                       the 1-second lock.
+                    */
+
+                    if(
+                        currentData &&
+                        Number(
+                            currentData.lockUntil||0
+                        ) > now
+                    ){
+                        return;
+                    }
+
+                    return {
+
+                        command:command,
+
+                        team:selectedTeamValue,
+
+                        round:currentRound,
+
+                        timestamp:now,
+
+                        lockUntil:
+                            now+1000
+
+                    };
+
+                }
+            );
+
+
+        if(result.committed){
+
+            /*
+               First accepted press gets the sound.
+            */
+
+            sound.currentTime=0;
+
+            try{
+                await sound.play();
+            }catch(error){
+                console.log(
+                    "Audio playback blocked:",
+                    error
+                );
+            }
+
+            setStatus(
+                "FIRST PRESS: "+
+                command+
+                " • "+
+                (selectedTeamValue==="TEAM_A"
+                    ? "TEAM A"
+                    : "TEAM B"),
+                "#00e676"
+            );
+
+        }else{
+
+            /*
+               Another remote/device was first.
+            */
+
+            setStatus(
+                "Another device pressed first.",
+                "#f1c40f"
+            );
         }
 
-        return {
-          command:button.dataset.answer,
-          team:team,
-          round:currentRound,
-          timestamp:now,
-          lockUntil:now+1000
-        };
-      });
 
-      if(result.committed){
-        statusEl.textContent=
-          "FIRST: "+button.dataset.answer;
+    }catch(error){
 
-        try{
-          sound.currentTime=0;
-          await sound.play();
-        }catch(e){
-          console.log("Audio playback blocked:",e);
-        }
-      }else{
-        statusEl.textContent="TOO LATE!";
-      }
+        console.error(error);
 
-    }catch(err){
-      console.error(err);
-      statusEl.textContent="Connection error.";
+        setStatus(
+            "Firebase send error.",
+            "#e74c3c"
+        );
     }
 
+
+    /*
+       Exactly 1 second later, all A/B/C/D
+       buttons become active again.
+    */
+
     setTimeout(()=>{
-      localLock=false;
-      answerButtons.forEach(b=>b.classList.remove("disabled"));
-      statusEl.textContent="READY";
+
+        localLock=false;
+
+        choiceButtons.forEach(
+            button=>button.disabled=false
+        );
+
     },1000);
-  };
+
+}
+
+
+choiceButtons.forEach(button=>{
+
+    button.addEventListener(
+        "click",
+        ()=>{
+
+            sendChoice(
+                button.dataset.command
+            );
+
+        }
+    );
+
 });
 
-/* LEAVE */
-$("leaveBtn").onclick=()=>{
-  location.reload();
+
+/* =========================================
+   CHANGE TEAM
+========================================= */
+
+changeTeam.onclick=function(){
+
+    selectedTeamValue="";
+
+    controllerScreen.classList.add("hidden");
+    teamScreen.classList.remove("hidden");
+
+    setStatus(
+        "Select your team.",
+        "#f1c40f"
+    );
+
 };
 
-/* CONNECTION */
-db.ref(".info/connected").on("value",snap=>{
-  offline.textContent=snap.val()===true?"":"OFFLINE";
-});
 </script>
+
 </body>
 </html>
