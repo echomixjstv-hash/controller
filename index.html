@@ -3,377 +3,1361 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+
 <title>Quiz Remote Controller</title>
+
 <style>
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;min-height:100vh;background:#111;color:#fff;font-family:Arial,sans-serif;display:flex;justify-content:center}
-#app{width:100%;max-width:560px;min-height:100vh;padding:24px;display:flex;align-items:center;justify-content:center}
-.screen{display:none;width:100%;text-align:center;align-items:center;flex-direction:column;gap:20px}
-.screen.active{display:flex}
-h1{margin:0;font-size:30px}
-.room{font-size:20px;opacity:.75}
-input{width:100%;max-width:400px;padding:18px;border:0;border-radius:14px;font-size:24px;text-align:center;outline:none}
-button{font-family:inherit;border:0;cursor:pointer}
-.enter{width:100%;max-width:400px;padding:18px;border-radius:14px;background:#2196f3;color:#fff;font-size:22px;font-weight:bold}
-.players{display:flex;gap:18px;justify-content:center;width:100%}
-.playerPick{width:145px;height:145px;border-radius:50%;background:#4caf50;color:#fff;font-size:20px;font-weight:bold}
-.playerPick:disabled{opacity:.35;cursor:not-allowed}
-.playerPick:active,.buzzer:active,.answer:active{transform:scale(.95)}
-.buzzer{position:relative;width:min(78vw,330px);height:min(78vw,330px);border-radius:50%;background:#4caf50;color:#fff;font-size:31px;font-weight:bold;box-shadow:0 10px 35px #0008}
-.buzzer.yellow{background:#ffd600;color:#111;animation:blink .55s infinite}
-.buzzer.red{background:#e53935;color:#fff;cursor:not-allowed}
-.buzzer.red:after{content:"✕";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:150px;font-weight:900}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.28}}
-.status{min-height:28px;font-size:20px;font-weight:bold}
-.attempt{font-size:17px;opacity:.8}
-.answers{width:100%;max-width:400px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.answer{height:100px;border-radius:16px;color:#fff;font-size:40px;font-weight:bold}
-.a{background:#e53935}.b{background:#1e88e5}.c{background:#fbc02d;color:#111}.d{background:#8e24aa}
-.answer.selected{outline:6px solid #fff;outline-offset:-6px}
-.answer:disabled{opacity:.45;cursor:not-allowed}
-.hidden{display:none!important}
-.leave{padding:12px 22px;border-radius:10px;background:#444;color:#fff;font-size:16px}
-.error{color:#ff8a80;min-height:24px}
-.note{font-size:14px;opacity:.6;max-width:390px}
+
+*{
+box-sizing:border-box;
+-webkit-tap-highlight-color:transparent
+}
+
+body{
+margin:0;
+min-height:100vh;
+background:#111;
+color:#fff;
+font-family:Arial,sans-serif;
+display:flex;
+justify-content:center
+}
+
+#app{
+width:100%;
+max-width:560px;
+min-height:100vh;
+padding:24px;
+display:flex;
+align-items:center;
+justify-content:center
+}
+
+.screen{
+display:none;
+width:100%;
+text-align:center;
+align-items:center;
+flex-direction:column;
+gap:20px
+}
+
+.screen.active{
+display:flex
+}
+
+h1{
+margin:0;
+font-size:30px
+}
+
+.room{
+font-size:20px;
+opacity:.75
+}
+
+input{
+width:100%;
+max-width:400px;
+padding:18px;
+border:0;
+border-radius:14px;
+font-size:24px;
+text-align:center;
+outline:none
+}
+
+button{
+font-family:inherit;
+border:0;
+cursor:pointer
+}
+
+.enter{
+width:100%;
+max-width:400px;
+padding:18px;
+border-radius:14px;
+background:#2196f3;
+color:#fff;
+font-size:22px;
+font-weight:bold
+}
+
+.players{
+display:flex;
+gap:18px;
+justify-content:center;
+width:100%
+}
+
+.playerPick{
+width:145px;
+height:145px;
+border-radius:50%;
+background:#4caf50;
+color:#fff;
+font-size:20px;
+font-weight:bold
+}
+
+.playerPick:disabled{
+opacity:.35;
+cursor:not-allowed
+}
+
+.playerPick:active,
+.buzzer:active,
+.answer:active{
+transform:scale(.95)
+}
+
+
+/* =========================
+   BUZZER
+========================= */
+
+.buzzer{
+position:relative;
+width:min(78vw,330px);
+height:min(78vw,330px);
+border-radius:50%;
+background:#4caf50;
+color:#fff;
+font-size:31px;
+font-weight:bold;
+box-shadow:0 10px 35px #0008
+}
+
+.buzzer.yellow{
+background:#ffd600;
+color:#111;
+animation:blink .55s infinite
+}
+
+.buzzer.red{
+background:#e53935;
+color:#fff;
+cursor:not-allowed
+}
+
+.buzzer.red:after{
+content:"✕";
+position:absolute;
+inset:0;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:150px;
+font-weight:900
+}
+
+@keyframes blink{
+0%,100%{
+opacity:1
+}
+50%{
+opacity:.28
+}
+}
+
+
+/* =========================
+   STATUS
+========================= */
+
+.status{
+min-height:28px;
+font-size:20px;
+font-weight:bold
+}
+
+.attempt{
+font-size:17px;
+opacity:.8
+}
+
+
+/* =========================
+   ANSWERS
+   CENTERED
+========================= */
+
+.answers{
+width:100%;
+max-width:400px;
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:14px;
+margin:0 auto;
+justify-content:center;
+align-items:center
+}
+
+.answers.hidden{
+display:none!important
+}
+
+.answer{
+height:100px;
+border-radius:16px;
+color:#fff;
+font-size:40px;
+font-weight:bold
+}
+
+.a{
+background:#e53935
+}
+
+.b{
+background:#1e88e5
+}
+
+.c{
+background:#fbc02d;
+color:#111
+}
+
+.d{
+background:#8e24aa
+}
+
+.answer.selected{
+outline:6px solid #fff;
+outline-offset:-6px
+}
+
+.answer:disabled{
+opacity:.45;
+cursor:not-allowed
+}
+
+
+/* =========================
+   OTHER
+========================= */
+
+.hidden{
+display:none!important
+}
+
+.leave{
+padding:12px 22px;
+border-radius:10px;
+background:#444;
+color:#fff;
+font-size:16px
+}
+
+.error{
+color:#ff8a80;
+min-height:24px
+}
+
+.note{
+font-size:14px;
+opacity:.6;
+max-width:390px
+}
+
 </style>
 </head>
+
 <body>
+
 <div id="app">
 
+
+<!-- =========================
+     ROOM
+========================= -->
+
 <section id="roomScreen" class="screen active">
+
 <h1>ENTER ROOM NUMBER</h1>
-<input id="roomInput" inputmode="numeric" maxlength="20" placeholder="Room Number" autocomplete="off">
-<button id="enterBtn" class="enter">ENTER ROOM</button>
+
+<input
+id="roomInput"
+inputmode="numeric"
+maxlength="20"
+placeholder="Room Number"
+autocomplete="off">
+
+<button id="enterBtn" class="enter">
+ENTER ROOM
+</button>
+
 <div id="roomError" class="error"></div>
-<div class="note">Enter the same room number used by the host.</div>
+
+<div class="note">
+Enter the same room number used by the host.
+</div>
+
 </section>
+
+
+<!-- =========================
+     PLAYER
+========================= -->
 
 <section id="playerScreen" class="screen">
+
 <h1>SELECT PLAYER</h1>
+
 <div id="playerRoom" class="room"></div>
+
 <div class="players">
-<button id="p1" class="playerPick">PLAYER 1</button>
-<button id="p2" class="playerPick">PLAYER 2</button>
+
+<button id="p1" class="playerPick">
+PLAYER 1
+</button>
+
+<button id="p2" class="playerPick">
+PLAYER 2
+</button>
+
 </div>
+
 <div id="playerError" class="error"></div>
+
 </section>
+
+
+<!-- =========================
+     GAME
+========================= -->
 
 <section id="gameScreen" class="screen">
-<div id="gameRoom" class="room"></div>
-<div id="attempt" class="attempt">ATTEMPT 1 OF 3</div>
-<button id="buzzer" class="buzzer">PLAYER</button>
-<div id="status" class="status">READY</div>
 
-<div id="answers" class="answers hidden">
-<button class="answer a" data-answer="A">A</button>
-<button class="answer b" data-answer="B">B</button>
-<button class="answer c" data-answer="C">C</button>
-<button class="answer d" data-answer="D">D</button>
+<div id="gameRoom" class="room"></div>
+
+<div id="attempt" class="attempt">
+ATTEMPT 1 OF 3
 </div>
 
-<button id="leaveBtn" class="leave">LEAVE ROOM</button>
+<button id="buzzer" class="buzzer">
+PLAYER
+</button>
+
+<div id="status" class="status">
+READY
+</div>
+
+
+<!-- ANSWERS -->
+
+<div id="answers" class="answers hidden">
+
+<button class="answer a" data-answer="A">
+A
+</button>
+
+<button class="answer b" data-answer="B">
+B
+</button>
+
+<button class="answer c" data-answer="C">
+C
+</button>
+
+<button class="answer d" data-answer="D">
+D
+</button>
+
+</div>
+
+
+<button id="leaveBtn" class="leave">
+LEAVE ROOM
+</button>
+
 </section>
 
 </div>
+
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
+
 <script>
+
+/* =========================
+   FIREBASE
+========================= */
+
 const firebaseConfig={
+
 apiKey:"AIzaSyAKzNpD9BeiT-eymm0e1l_U3p_dggPrbEk",
+
 authDomain:"jess-santi.firebaseapp.com",
+
 databaseURL:"https://jess-santi-default-rtdb.firebaseio.com/",
+
 projectId:"jess-santi",
+
 storageBucket:"jess-santi.firebasestorage.app",
+
 messagingSenderId:"457562056307",
+
 appId:"1:457562056307:web:1be6c76bc8bdb5bd0aac06",
-measurementId:"G-SKL83F1C8B"
+
+measurementId:"G-SKL83F8C8B"
+
 };
 
 firebase.initializeApp(firebaseConfig);
+
 const db=firebase.database();
 
-const firstSound=new Audio("sound.mp3");
-const lateSound=new Audio("better-luck-next-time.mp3");
+
+/* =========================
+   SOUNDS
+========================= */
+
+const firstSound=
+new Audio("sound.mp3");
+
+const lateSound=
+new Audio("better-luck-next-time.mp3");
+
 firstSound.preload="auto";
 lateSound.preload="auto";
 
-let room="",player="",roomRef=null,playerRef=null;
-let currentRound=null,currentAttempt=1,joined=false;
-let localBuzz=false,answerSent=false;
-let allowedPlayer=null;
-let listeners=[];
 
-const $=id=>document.getElementById(id);
+/* =========================
+   VARIABLES
+========================= */
+
+let room="";
+let player="";
+
+let roomRef=null;
+let playerRef=null;
+
+let currentRound=null;
+let currentAttempt=1;
+
+let joined=false;
+
+let localBuzz=false;
+let answerSent=false;
+
+let allowedPlayer=null;
+
+
+/* =========================
+   SHORT ID
+========================= */
+
+const $=id=>
+document.getElementById(id);
+
+
+/* =========================
+   SHOW SCREEN
+========================= */
 
 function show(el){
-[$("roomScreen"),$("playerScreen"),$("gameScreen")].forEach(x=>x.classList.remove("active"));
+
+[
+$("roomScreen"),
+$("playerScreen"),
+$("gameScreen")
+].forEach(x=>
+x.classList.remove("active")
+);
+
 el.classList.add("active");
+
 }
+
+
+/* =========================
+   SOUND
+========================= */
 
 function sound(audio){
-try{audio.currentTime=0;audio.play().catch(()=>{});}catch(e){}
+
+try{
+
+audio.currentTime=0;
+
+audio.play().catch(()=>{});
+
+}catch(e){}
+
 }
+
+
+/* =========================
+   ANSWER BUTTONS
+========================= */
 
 function setAnswerButtons(on){
-document.querySelectorAll(".answer").forEach(b=>b.disabled=!on);
+
+document
+.querySelectorAll(".answer")
+.forEach(b=>{
+b.disabled=!on;
+});
+
 }
+
 
 function clearAnswerSelection(){
-document.querySelectorAll(".answer").forEach(b=>b.classList.remove("selected"));
+
+document
+.querySelectorAll(".answer")
+.forEach(b=>{
+b.classList.remove("selected");
+});
+
 }
+
+
+/* =========================
+   HIDE ANSWERS
+========================= */
+
+function hideAnswers(){
+
+$("answers").classList.add("hidden");
+
+setAnswerButtons(false);
+
+clearAnswerSelection();
+
+}
+
+
+/* =========================
+   READY
+========================= */
 
 function ready(){
+
 $("buzzer").className="buzzer";
-$("buzzer").textContent=player==="player1"?"PLAYER 1":"PLAYER 2";
+
+$("buzzer").textContent=
+player==="player1"
+?"PLAYER 1"
+:"PLAYER 2";
+
 $("status").textContent="READY";
-$("answers").classList.add("hidden");
-$("attempt").textContent="ATTEMPT "+currentAttempt+" OF 3";
-clearAnswerSelection();
+
+$("attempt").textContent=
+"ATTEMPT "+currentAttempt+" OF 3";
+
+
+/*
+   READY = choices available
+*/
+
+$("answers").classList.remove("hidden");
+
 setAnswerButtons(false);
+
+clearAnswerSelection();
+
 localBuzz=false;
 answerSent=false;
+
 }
+
+
+/* =========================
+   FIRST BUZZ
+========================= */
 
 function winner(){
+
 $("buzzer").className="buzzer yellow";
-$("status").textContent="FIRST TO BUZZ";
+
+$("status").textContent=
+"FIRST TO BUZZ";
+
+
+/*
+   Choices become active
+*/
+
 $("answers").classList.remove("hidden");
+
 setAnswerButtons(true);
+
 localBuzz=true;
+
 sound(firstSound);
+
 }
+
+
+/* =========================
+   TOO LATE
+========================= */
 
 function loser(){
+
 $("buzzer").className="buzzer red";
-$("status").textContent="TOO LATE";
-$("answers").classList.add("hidden");
-setAnswerButtons(false);
+
+$("status").textContent=
+"TOO LATE";
+
+hideAnswers();
+
 localBuzz=false;
-sound(lateSound);
+
 }
+
+
+/* =========================
+   DISABLED
+========================= */
 
 function disabled(){
+
 $("buzzer").className="buzzer red";
-$("status").textContent="DISABLED";
-$("answers").classList.add("hidden");
-setAnswerButtons(false);
+
+$("status").textContent=
+"DISABLED";
+
+hideAnswers();
+
 localBuzz=false;
+
 }
+
+
+/* =========================
+   STEAL READY
+========================= */
 
 function stealReady(){
+
 $("buzzer").className="buzzer";
-$("buzzer").textContent=player==="player1"?"PLAYER 1":"PLAYER 2";
-$("status").textContent="STEAL • READY";
-$("answers").classList.add("hidden");
-setAnswerButtons(false);
-localBuzz=false;
-answerSent=false;
+
+$("buzzer").textContent=
+player==="player1"
+?"PLAYER 1"
+:"PLAYER 2";
+
+$("status").textContent=
+"STEAL • READY";
+
+$("attempt").textContent=
+"ATTEMPT "+currentAttempt+" OF 3";
+
+
+/*
+   STEAL = choices available
+*/
+
+$("answers").classList.remove("hidden");
+
+setAnswerButtons(true);
+
 clearAnswerSelection();
-$("attempt").textContent="ATTEMPT "+currentAttempt+" OF 3";
+
+localBuzz=true;
+
+answerSent=false;
+
 }
+
+
+/* =========================
+   CONNECTION ERROR
+========================= */
 
 function connectionError(target){
-target.textContent="Firebase connection error. Check Realtime Database Rules.";
+
+target.textContent=
+"Firebase connection error. Check Realtime Database Rules.";
+
 }
+
+
+/* =========================
+   ENTER ROOM
+========================= */
 
 $("enterBtn").onclick=async()=>{
-room=$("roomInput").value.trim();
+
+room=
+$("roomInput").value.trim();
+
 $("roomError").textContent="";
-if(!room){$("roomError").textContent="Enter a room number.";return}
-roomRef=db.ref("rooms/"+room);
-try{
-const snap=await roomRef.child("round").once("value");
-if(snap.val()===null)await roomRef.child("round").set(1);
-$("playerRoom").textContent="ROOM "+room;
-show($("playerScreen"));
-watchRoom();
-}catch(e){
-console.error(e);connectionError($("roomError"));
+
+if(!room){
+
+$("roomError").textContent=
+"Enter a room number.";
+
+return;
+
 }
+
+roomRef=
+db.ref("rooms/"+room);
+
+try{
+
+const snap=
+await roomRef.child("round").once("value");
+
+if(snap.val()===null){
+
+await roomRef.child("round").set(1);
+
+}
+
+$("playerRoom").textContent=
+"ROOM "+room;
+
+show($("playerScreen"));
+
+watchRoom();
+
+}catch(e){
+
+console.error(e);
+
+connectionError($("roomError"));
+
+}
+
 };
+
+
+/* =========================
+   WATCH ROOM
+========================= */
 
 function watchRoom(){
+
+
+/* ROUND */
+
 roomRef.child("round").on("value",s=>{
+
 const v=s.val();
+
 if(v===null)return;
+
 if(currentRound!==v){
+
 currentRound=v;
+
 currentAttempt=1;
+
 allowedPlayer=null;
-if(joined)ready();
+
+if(joined){
+
+ready();
+
 }
+
+}
+
 });
+
+
+/* ATTEMPT */
 
 roomRef.child("attempt").on("value",s=>{
+
 const v=s.val();
+
 if(v!==null){
-currentAttempt=Number(v)||1;
-$("attempt").textContent="ATTEMPT "+currentAttempt+" OF 3";
+
+currentAttempt=
+Number(v)||1;
+
+$("attempt").textContent=
+"ATTEMPT "+currentAttempt+" OF 3";
+
 }
+
 });
+
+
+/* ALLOWED PLAYER */
 
 roomRef.child("allowedPlayer").on("value",s=>{
-allowedPlayer=s.val()||null;
+
+allowedPlayer=
+s.val()||null;
+
 if(!joined)return;
+
+
 if(allowedPlayer===player){
-if(!$("buzzer").classList.contains("yellow"))stealReady();
-}else if(allowedPlayer && allowedPlayer!==player){
-disabled();
+
+/*
+   Player is allowed to steal.
+*/
+
+if(
+!$("answers").classList.contains("hidden") &&
+localBuzz
+){
+
+return;
+
 }
+
+stealReady();
+
+}
+
+
+else if(
+allowedPlayer &&
+allowedPlayer!==player
+){
+
+disabled();
+
+}
+
 });
+
+
+/* BUZZER */
 
 roomRef.child("buzzer").on("value",s=>{
+
 if(!joined)return;
+
 const d=s.val();
-if(!d||d.round!==currentRound){
-if(!allowedPlayer)ready();
+
+
+if(
+!d ||
+d.round!==currentRound
+){
+
+if(!allowedPlayer){
+
+ready();
+
+}
+
 return;
+
 }
+
+
 if(d.player===player){
+
 winner();
+
 }else{
+
 loser();
+
 }
+
 });
+
+
+/* =========================
+   STATE
+========================= */
 
 roomRef.child("state").on("value",s=>{
+
 if(!joined)return;
+
 const state=s.val();
+
 if(!state)return;
-if(state.round!==currentRound)return;
+
+if(
+state.round!==currentRound
+)return;
+
+
+/* =========================
+   READY
+========================= */
 
 if(state.phase==="READY"){
-currentAttempt=state.attempt||1;
-allowedPlayer=state.allowedPlayer||null;
-if(allowedPlayer===player||!allowedPlayer)ready();
-else disabled();
+
+currentAttempt=
+state.attempt||1;
+
+allowedPlayer=
+state.allowedPlayer||null;
+
+
+if(
+allowedPlayer===player ||
+!allowedPlayer
+){
+
+ready();
+
+}else{
+
+disabled();
+
 }
+
+}
+
+
+/* =========================
+   STEAL
+========================= */
+
 if(state.phase==="STEAL"){
-currentAttempt=state.attempt||2;
-allowedPlayer=state.allowedPlayer||null;
-if(allowedPlayer===player)stealReady();
-else disabled();
+
+currentAttempt=
+state.attempt||2;
+
+allowedPlayer=
+state.allowedPlayer||null;
+
+
+if(
+allowedPlayer===player
+){
+
+stealReady();
+
+}else{
+
+disabled();
+
 }
+
+}
+
+
+/* =========================
+   ANSWERED
+========================= */
+
 if(state.phase==="ANSWERED"){
-$("answers").classList.add("hidden");
-setAnswerButtons(false);
-if(state.player===player)status.textContent=state.correct?"CORRECT":"WRONG";
-else status.textContent=state.correct?"ANSWERED":"WRONG ANSWER";
+
+hideAnswers();
+
+localBuzz=false;
+answerSent=false;
+
+
+/*
+   CORRECT
+   → BALIK AGAD SA READY
+*/
+
+if(state.correct===true){
+
+$("status").textContent=
+"CORRECT";
+
+
+setTimeout(()=>{
+
+if(
+joined &&
+currentRound===state.round
+){
+
+ready();
+
 }
+
+},300);
+
+}
+
+
+/*
+   WRONG
+   → WAIT FOR NEXT STATE
+*/
+
+else{
+
+if(
+state.player===player
+){
+
+$("status").textContent=
+"WRONG";
+
+}else{
+
+$("status").textContent=
+"WRONG ANSWER";
+
+}
+
+}
+
+}
+
+
+/* =========================
+   FINISHED
+========================= */
+
 if(state.phase==="FINISHED"){
-$("answers").classList.add("hidden");
-setAnswerButtons(false);
-$("buzzer").className="buzzer red";
-status.textContent="ROUND FINISHED";
+
+hideAnswers();
+
+$("buzzer").className=
+"buzzer red";
+
+$("status").textContent=
+"ROUND FINISHED";
+
+localBuzz=false;
+answerSent=false;
+
 }
+
 });
+
 }
+
+
+/* =========================
+   JOIN PLAYER
+========================= */
 
 async function join(which){
+
 $("playerError").textContent="";
+
 player=which;
-playerRef=roomRef.child("players/"+player);
+
+playerRef=
+roomRef.child("players/"+player);
+
 try{
-const result=await playerRef.transaction(v=>{
-if(v===null)return{joined:true,at:firebase.database.ServerValue.TIMESTAMP};
-return;
-});
-if(!result.committed){
-$("playerError").textContent="That player slot is already occupied.";
-return;
+
+const result=
+await playerRef.transaction(v=>{
+
+if(v===null){
+
+return{
+
+joined:true,
+
+at:
+firebase.database.ServerValue.TIMESTAMP
+
+};
+
 }
+
+return;
+
+});
+
+
+if(!result.committed){
+
+$("playerError").textContent=
+"That player slot is already occupied.";
+
+return;
+
+}
+
+
 joined=true;
+
 playerRef.onDisconnect().remove();
 
-const round=await roomRef.child("round").once("value");
-currentRound=round.val()||1;
 
-$("gameRoom").textContent="ROOM "+room+" • "+(player==="player1"?"PLAYER 1":"PLAYER 2");
+const round=
+await roomRef.child("round").once("value");
 
-const state=await roomRef.child("state").once("value");
+currentRound=
+round.val()||1;
+
+
+$("gameRoom").textContent=
+"ROOM "+room+
+" • "+
+(player==="player1"
+?"PLAYER 1"
+:"PLAYER 2");
+
+
+const state=
+await roomRef.child("state").once("value");
+
+
 if(state.exists()){
+
 const st=state.val();
-if(st.round===currentRound){
-currentAttempt=st.attempt||1;
-allowedPlayer=st.allowedPlayer||null;
-}
-}
-if(allowedPlayer && allowedPlayer!==player)disabled();
-else ready();
-show($("gameScreen"));
-}catch(e){
-console.error(e);$("playerError").textContent="Unable to join this player slot.";
-}
+
+
+if(
+st.round===currentRound
+){
+
+currentAttempt=
+st.attempt||1;
+
+allowedPlayer=
+st.allowedPlayer||null;
+
 }
 
-$("p1").onclick=()=>join("player1");
-$("p2").onclick=()=>join("player2");
+}
+
+
+if(
+allowedPlayer &&
+allowedPlayer!==player
+){
+
+disabled();
+
+}else{
+
+ready();
+
+}
+
+
+show($("gameScreen"));
+
+}catch(e){
+
+console.error(e);
+
+$("playerError").textContent=
+"Unable to join this player slot.";
+
+}
+
+}
+
+
+$("p1").onclick=
+()=>join("player1");
+
+$("p2").onclick=
+()=>join("player2");
+
+
+/* =========================
+   BUZZER
+========================= */
 
 $("buzzer").onclick=async()=>{
+
 if(!joined)return;
-if(allowedPlayer && allowedPlayer!==player)return;
-if($("buzzer").classList.contains("red"))return;
-if($("buzzer").classList.contains("yellow"))return;
+
+if(
+allowedPlayer &&
+allowedPlayer!==player
+)return;
+
+if(
+$("buzzer").classList.contains("red")
+)return;
+
+if(
+$("buzzer").classList.contains("yellow")
+)return;
+
+
 try{
-const ref=roomRef.child("buzzer");
-const result=await ref.transaction(v=>{
-if(v===null)return{
+
+const ref=
+roomRef.child("buzzer");
+
+
+const result=
+await ref.transaction(v=>{
+
+if(v===null){
+
+return{
+
 player:player,
+
 round:currentRound,
+
 attempt:currentAttempt,
-at:firebase.database.ServerValue.TIMESTAMP
-};
-return;
-});
-if(result.committed){
-winner();
-}else{
-loser();
-}
-}catch(e){
-console.error(e);$("status").textContent="CONNECTION ERROR";
-}
+
+at:
+firebase.database.ServerValue.TIMESTAMP
+
 };
 
-document.querySelectorAll(".answer").forEach(btn=>{
-btn.onclick=async()=>{
-if(!localBuzz||answerSent)return;
-answerSent=true;
-const answer=btn.dataset.answer;
-try{
-await roomRef.child("answer").set({
-player:player,
-round:currentRound,
-attempt:currentAttempt,
-answer:answer,
-at:firebase.database.ServerValue.TIMESTAMP
-});
-clearAnswerSelection();
-btn.classList.add("selected");
-$("status").textContent="ANSWER SENT: "+answer;
-setAnswerButtons(false);
-}catch(e){
-console.error(e);
-answerSent=false;
-$("status").textContent="CONNECTION ERROR";
 }
-};
+
+return;
+
 });
+
+
+if(result.committed){
+
+winner();
+
+}else{
+
+loser();
+
+}
+
+}catch(e){
+
+console.error(e);
+
+$("status").textContent=
+"CONNECTION ERROR";
+
+}
+
+};
+
+
+/* =========================
+   ANSWERS
+========================= */
+
+document
+.querySelectorAll(".answer")
+.forEach(btn=>{
+
+btn.onclick=async()=>{
+
+if(
+!localBuzz ||
+answerSent
+)return;
+
+
+answerSent=true;
+
+const answer=
+btn.dataset.answer;
+
+
+try{
+
+await roomRef.child("answer").set({
+
+player:player,
+
+round:currentRound,
+
+attempt:currentAttempt,
+
+answer:answer,
+
+at:
+firebase.database.ServerValue.TIMESTAMP
+
+});
+
+
+clearAnswerSelection();
+
+btn.classList.add("selected");
+
+$("status").textContent=
+"ANSWER SENT: "+answer;
+
+
+/*
+   Pagkatapos pumili,
+   mawawala agad ang choices.
+*/
+
+$("answers").classList.add("hidden");
+
+setAnswerButtons(false);
+
+localBuzz=false;
+
+
+}catch(e){
+
+console.error(e);
+
+answerSent=false;
+
+$("status").textContent=
+"CONNECTION ERROR";
+
+}
+
+};
+
+});
+
+
+/* =========================
+   LEAVE
+========================= */
 
 $("leaveBtn").onclick=async()=>{
-try{if(playerRef)await playerRef.remove()}catch(e){}
+
+try{
+
+if(playerRef){
+
+await playerRef.remove();
+
+}
+
+}catch(e){}
+
 location.reload();
+
 };
 
-window.addEventListener("beforeunload",()=>{
-if(playerRef)playerRef.remove().catch(()=>{});
+
+/* =========================
+   CLOSE PAGE
+========================= */
+
+window.addEventListener(
+"beforeunload",
+()=>{
+
+if(playerRef){
+
+playerRef.remove().catch(()=>{});
+
+}
+
 });
 
-$("roomInput").addEventListener("keydown",e=>{
-if(e.key==="Enter")$("enterBtn").click();
+
+/* =========================
+   ENTER KEY
+========================= */
+
+$("roomInput").addEventListener(
+"keydown",
+e=>{
+
+if(e.key==="Enter"){
+
+$("enterBtn").click();
+
+}
+
 });
+
 </script>
+
 </body>
 </html>
