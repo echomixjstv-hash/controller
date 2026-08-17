@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
+
 <meta name="viewport"
       content="width=device-width,initial-scale=1.0">
 
 <title>Team Quiz Controller</title>
 
 <style>
+
 *{
     box-sizing:border-box;
     -webkit-tap-highlight-color:transparent;
@@ -37,6 +40,7 @@ body{
     display:flex;
     flex-direction:column;
 }
+
 
 /* ================================
    HEADER
@@ -68,6 +72,7 @@ body{
 .status.error{
     background:#c0392b;
 }
+
 
 /* ================================
    ROOM
@@ -121,6 +126,7 @@ body{
 #connectBtn:disabled{
     opacity:.5;
 }
+
 
 /* ================================
    PLAYER SELECT
@@ -193,6 +199,7 @@ body{
     font-weight:normal;
 }
 
+
 /* ================================
    CONTROLLER
 ================================ */
@@ -239,6 +246,7 @@ body{
     background:#3498db;
 }
 
+
 /* ================================
    BUZZER
 ================================ */
@@ -262,14 +270,17 @@ body{
     font-size:60px;
     font-weight:900;
     cursor:pointer;
+
     box-shadow:
         0 8px 0 #7f1d1d,
         0 15px 30px rgba(0,0,0,.5);
+
     transition:.08s;
 }
 
 #buzzBtn:active{
     transform:translateY(8px);
+
     box-shadow:
         0 0 0 #7f1d1d,
         0 8px 20px rgba(0,0,0,.5);
@@ -278,6 +289,32 @@ body{
 #buzzBtn.sent{
     background:#27ae60;
 }
+
+
+/* ================================
+   SENSOR STATUS
+================================ */
+
+.sensor-status{
+    text-align:center;
+    font-size:13px;
+    font-weight:bold;
+    margin-top:5px;
+    min-height:18px;
+}
+
+.sensor-status.ready{
+    color:#2ecc71;
+}
+
+.sensor-status.warning{
+    color:#f1c40f;
+}
+
+.sensor-status.error{
+    color:#e74c3c;
+}
+
 
 /* ================================
    MESSAGE
@@ -294,6 +331,11 @@ body{
 .hidden{
     display:none!important;
 }
+
+
+/* ================================
+   MOBILE
+================================ */
 
 @media(max-width:450px){
 
@@ -319,21 +361,35 @@ body{
         font-size:45px;
         border-radius:25px;
     }
+
 }
+
 </style>
+
 </head>
+
 
 <body>
 
+
 <div class="app">
 
+
+    <!-- HEADER -->
+
     <div class="header">
-        <h1>🎮 QUIZ CONTROLLER</h1>
+
+        <h1>
+            🎮 QUIZ CONTROLLER
+        </h1>
 
         <div id="status"
              class="status">
+
             Enter Room Number
+
         </div>
+
     </div>
 
 
@@ -375,6 +431,7 @@ body{
 
         <div class="players">
 
+
             <button
                 id="player1Btn"
                 class="player-btn player1">
@@ -386,7 +443,9 @@ body{
                 <span
                     id="player1Status"
                     class="player-status">
+
                     Available
+
                 </span>
 
             </button>
@@ -403,7 +462,9 @@ body{
                 <span
                     id="player2Status"
                     class="player-status">
+
                     Available
+
                 </span>
 
             </button>
@@ -418,6 +479,7 @@ body{
     <div id="controller"
          class="controller">
 
+
         <div
             id="selectedPlayer"
             class="selected-player">
@@ -428,28 +490,40 @@ body{
 
         <div class="choice-grid">
 
+
             <button
                 class="choice-btn"
                 data-choice="A">
+
                 A
+
             </button>
+
 
             <button
                 class="choice-btn"
                 data-choice="B">
+
                 B
+
             </button>
+
 
             <button
                 class="choice-btn"
                 data-choice="C">
+
                 C
+
             </button>
+
 
             <button
                 class="choice-btn"
                 data-choice="D">
+
                 D
+
             </button>
 
         </div>
@@ -460,8 +534,21 @@ body{
         <div class="buzz-area">
 
             <button id="buzzBtn">
+
                 BUZZ
+
             </button>
+
+        </div>
+
+
+        <!-- SENSOR -->
+
+        <div
+            id="sensorStatus"
+            class="sensor-status">
+
+            Photosensor: Starting...
 
         </div>
 
@@ -476,13 +563,16 @@ body{
 </div>
 
 
+
 <!-- FIREBASE -->
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
 
 <script>
+
 
 /* =========================================================
    FIREBASE
@@ -497,957 +587,1348 @@ const firebaseConfig = {
         "jess-santi.firebaseapp.com",
 
     databaseURL:
-        "https://jess-santi-default-rtdb.firebaseio.com/", 
- 
-    projectId: 
-        "jess-santi", 
- 
-    storageBucket: 
-        "jess-santi.firebasestorage.app", 
- 
-    messagingSenderId: 
-        "457562056307", 
- 
-    appId: 
-        "1:457562056307:web:1be6c76bc8bdb5bd0aac06", 
- 
-    measurementId: 
-        "G-SKL83F1C8B" 
-}; 
- 
- 
-firebase.initializeApp(firebaseConfig); 
- 
-const db=firebase.database(); 
- 
- 
-/* ========================================================= 
-   VARIABLES 
-========================================================= */ 
- 
-let roomNumber=""; 
-let roomRef=null; 
- 
-let selectedPlayer=""; 
- 
-let connected=false; 
- 
-let playerListener=null; 
-let stateListener=null; 
- 
- 
-/* ========================================================= 
-   ELEMENTS 
-========================================================= */ 
- 
-const roomInput= 
-    document.getElementById( 
-        "roomInput" 
-    ); 
- 
-const connectBtn= 
-    document.getElementById( 
-        "connectBtn" 
-    ); 
- 
-const status= 
-    document.getElementById( 
-        "status" 
-    ); 
- 
-const roomSection= 
-    document.getElementById( 
-        "roomSection" 
-    ); 
- 
-const playerSection= 
-    document.getElementById( 
-        "playerSection" 
-    ); 
- 
-const controller= 
-    document.getElementById( 
-        "controller" 
-    ); 
- 
-const player1Btn= 
-    document.getElementById( 
-        "player1Btn" 
-    ); 
- 
-const player2Btn= 
-    document.getElementById( 
-        "player2Btn" 
-    ); 
- 
-const player1Status= 
-    document.getElementById( 
-        "player1Status" 
-    ); 
- 
-const player2Status= 
-    document.getElementById( 
-        "player2Status" 
-    ); 
- 
-const selectedPlayerText= 
-    document.getElementById( 
-        "selectedPlayer" 
-    ); 
- 
-const buzzBtn= 
-    document.getElementById( 
-        "buzzBtn" 
-    ); 
- 
-const message= 
-    document.getElementById( 
-        "message" 
-    ); 
- 
- 
-/* ========================================================= 
-   STATUS 
-========================================================= */ 
- 
-function setStatus( 
-    text, 
-    type="" 
-){ 
- 
-    status.innerText=text; 
- 
-    status.classList.remove( 
-        "ok", 
-        "error" 
-    ); 
- 
-    if(type) 
-        status.classList.add(type); 
-} 
- 
- 
-/* ========================================================= 
-   CONNECT ROOM 
-========================================================= */ 
- 
-connectBtn.onclick= 
-async function(){ 
- 
-    const room= 
-        roomInput.value.trim(); 
- 
-    if(!room){ 
- 
-        setStatus( 
-            "Enter Room Number", 
-            "error" 
-        ); 
- 
-        return; 
-    } 
- 
- 
-    connectBtn.disabled=true; 
- 
-    setStatus( 
-        "Checking Room..." 
-    ); 
- 
- 
-    try{ 
- 
-        const ref= 
-            db.ref( 
-                "rooms/"+room 
-            ); 
- 
- 
-        /* 
-           IMPORTANT: 
- 
-           Hindi tayo basta gumagawa ng room. 
- 
-           Chine-check muna kung may 
-           existing room/state. 
-        */ 
- 
-        const snap= 
-            await ref.once("value"); 
- 
- 
-        if(!snap.exists()){ 
- 
-            setStatus( 
-                "❌ Room Not Found", 
-                "error" 
-            ); 
- 
-            connectBtn.disabled=false; 
- 
-            return; 
-        } 
- 
- 
-        /* 
-           Existing room lamang. 
-        */ 
- 
-        roomNumber=room; 
- 
-        roomRef=ref; 
- 
-        connected=true; 
- 
- 
-        setStatus( 
-            "✓ ROOM CONNECTED: "+room, 
-            "ok" 
-        ); 
- 
- 
-        roomInput.disabled=true; 
- 
-        connectBtn.innerText= 
-            "CONNECTED"; 
- 
- 
-        /* 
-           Hide room input after 
-           successful connection. 
-        */ 
- 
-        roomSection.style.display= 
-            "none"; 
- 
- 
-        playerSection.style.display= 
-            "block"; 
- 
- 
-        listenPlayers(); 
- 
-        listenQuizState(); 
- 
-    }catch(error){ 
- 
-        console.error(error); 
- 
-        setStatus( 
-            "❌ Connection Error", 
-            "error" 
-        ); 
- 
-        connectBtn.disabled=false; 
-    } 
-}; 
- 
- 
-/* ========================================================= 
-   PLAYER AVAILABILITY 
-========================================================= */ 
- 
-function listenPlayers(){ 
- 
-    if(!roomRef) 
-        return; 
- 
- 
-    if(playerListener) 
-        roomRef 
-        .child("controllers") 
-        .off( 
-            "value", 
-            playerListener 
-        ); 
- 
- 
-    playerListener=function(snap){ 
- 
-        const data= 
-            snap.val() || {}; 
- 
- 
-        const player1= 
-            data.player1; 
- 
- 
-        const player2= 
-            data.player2; 
- 
- 
-        updatePlayerButton( 
-            player1Btn, 
-            player1Status, 
-            player1, 
-            "player1" 
-        ); 
- 
- 
-        updatePlayerButton( 
-            player2Btn, 
-            player2Status, 
-            player2, 
-            "player2" 
-        ); 
- 
- 
-        /* 
-           Kung kasalukuyang selected 
-           player ay nawala, 
-           controller isasara. 
-        */ 
- 
-        if( 
-            selectedPlayer==="player1" && 
-            player1 
-        ){ 
- 
-            /* 
-               Okay pa ang Player 1. 
-            */ 
- 
-        } 
- 
-        if( 
-            selectedPlayer==="player2" && 
-            player2 
-        ){ 
- 
-            /* 
-               Okay pa ang Player 2. 
-            */ 
- 
-        } 
- 
- 
-        /* 
-           Kapag nawala ang selected 
-           player sa Firebase, 
-           automatic balik sa 
-           player selection. 
-        */ 
- 
-        if( 
-            selectedPlayer==="player1" && 
-            !player1 
-        ){ 
- 
-            releaseLocalController(); 
- 
-        } 
- 
- 
-        if( 
-            selectedPlayer==="player2" && 
-            !player2 
-        ){ 
- 
-            releaseLocalController(); 
- 
-        } 
- 
-    }; 
- 
- 
-    roomRef 
-    .child("controllers") 
-    .on( 
-        "value", 
-        playerListener 
-    ); 
-} 
- 
- 
-/* ========================================================= 
-   PLAYER BUTTON UI 
-========================================================= */ 
- 
-function updatePlayerButton( 
-    button, 
-    statusElement, 
-    data, 
-    player 
-){ 
- 
-    /* 
-       Kung walang controller data, 
-       available. 
-    */ 
- 
-    if(!data){ 
- 
-        button.classList.remove( 
-            "unavailable" 
-        ); 
- 
-        statusElement.innerText= 
-            "Available"; 
- 
-        return; 
-    } 
- 
- 
-    /* 
-       May gumagamit. 
-    */ 
- 
-    button.classList.add( 
-        "unavailable" 
-    ); 
- 
-    statusElement.innerText= 
-        "IN USE"; 
-} 
- 
- 
-/* ========================================================= 
-   SELECT PLAYER 
-========================================================= */ 
- 
-player1Btn.onclick= 
-function(){ 
- 
-    selectPlayer( 
-        "player1" 
-    ); 
-}; 
- 
- 
-player2Btn.onclick= 
-function(){ 
- 
-    selectPlayer( 
-        "player2" 
-    ); 
-}; 
- 
- 
-/* ========================================================= 
-   CLAIM PLAYER 
-========================================================= */ 
- 
-async function selectPlayer( 
-    player 
-){ 
- 
-    if(!connected || !roomRef) 
-        return; 
- 
- 
-    if(selectedPlayer) 
-        return; 
- 
- 
-    const playerRef= 
-        roomRef 
-        .child("controllers") 
-        .child(player); 
- 
- 
-    try{ 
- 
-        /* 
-           Transaction ang gamit para 
-           hindi dalawang device 
-           sabay makakuha ng player. 
-        */ 
- 
-        const result= 
-            await playerRef.transaction( 
-                current=>{ 
- 
-                    if(current!==null) 
-                        return; 
- 
-                    return { 
-                        connected:true, 
-                        at: 
-                            firebase.database 
-                            .ServerValue 
-                            .TIMESTAMP 
-                    }; 
- 
-                } 
-            ); 
- 
- 
-        if(!result.committed){ 
- 
-            message.innerText= 
-                "❌ Player already in use."; 
- 
-            return; 
-        } 
- 
- 
-        selectedPlayer=player; 
- 
- 
-        playerSection.style.display= 
-            "none"; 
- 
- 
-        controller.style.display= 
-            "flex"; 
- 
- 
-        if(player==="player1"){ 
- 
-            selectedPlayerText.innerText= 
-                "🔵 PLAYER 1"; 
- 
-        }else{ 
- 
-            selectedPlayerText.innerText= 
-                "🔴 PLAYER 2"; 
-        } 
- 
- 
-        message.innerText= 
-            "Controller Ready"; 
- 
- 
-        /* 
-           Keep-alive. 
-        */ 
- 
-        startPresence(); 
- 
-    }catch(error){ 
- 
-        console.error(error); 
- 
-        message.innerText= 
-            "Unable to select player."; 
-    } 
-} 
- 
- 
-/* ========================================================= 
-   PRESENCE 
-========================================================= */ 
- 
-let presenceRef=null; 
- 
-function startPresence(){ 
- 
-    if(!roomRef || !selectedPlayer) 
-        return; 
- 
- 
-    presenceRef= 
-        roomRef 
-        .child("controllers") 
-        .child(selectedPlayer); 
- 
- 
-    /* 
-       Kapag browser/tab nagsara, 
-       Firebase automatic magtanggal. 
-    */ 
- 
-    presenceRef 
-    .onDisconnect() 
-    .remove(); 
- 
- 
-    presenceRef.update({ 
- 
-        connected:true, 
- 
-        at: 
-            firebase.database 
-            .ServerValue 
-            .TIMESTAMP 
- 
-    }); 
-} 
- 
- 
-/* ========================================================= 
-   RELEASE LOCAL 
-========================================================= */ 
- 
-function releaseLocalController(){ 
- 
-    if( 
-        presenceRef && 
-        selectedPlayer 
-    ){ 
- 
-        presenceRef 
-        .remove() 
-        .catch(()=>{}); 
-    } 
- 
- 
-    selectedPlayer=""; 
- 
-    presenceRef=null; 
- 
- 
-    controller.style.display= 
-        "none"; 
- 
- 
-    playerSection.style.display= 
-        "block"; 
- 
- 
-    message.innerText= 
-        "Player is no longer available."; 
-} 
- 
- 
-/* ========================================================= 
-   QUIZ STATE 
-========================================================= */ 
- 
-function listenQuizState(){ 
- 
-    if(!roomRef) 
-        return; 
- 
- 
-    if(stateListener) 
-        roomRef 
-        .child("state") 
-        .off( 
-            "value", 
-            stateListener 
-        ); 
- 
- 
-    stateListener= 
-    function(snap){ 
- 
-        const state= 
-            snap.val(); 
- 
- 
-        if(!state) 
-            return; 
- 
- 
-        /* 
-           Controller remains active. 
- 
-           Walang round checking. 
-           Walang round number requirement. 
-        */ 
- 
- 
-        if( 
-            state.phase=== 
-            "QUIZ_FINISHED" 
-        ){ 
- 
-            message.innerText= 
-                "QUIZ FINISHED"; 
- 
-            return; 
-        } 
- 
- 
-        /* 
-           Kapag may ibang player 
-           na nanalo sa buzzer, 
-           hindi natin dini-disable 
-           ang controller. 
- 
-           Host ang magde-decide kung 
-           tatanggapin ang command. 
-        */ 
- 
-    }; 
- 
- 
-    roomRef 
-    .child("state") 
-    .on( 
-        "value", 
-        stateListener 
-    ); 
-} 
- 
- 
-/* ========================================================= 
-   SEND REMOTE COMMAND 
-========================================================= */ 
- 
-async function sendCommand( 
-    command 
-){ 
- 
-    if( 
-        !connected || 
-        !roomRef || 
-        !selectedPlayer 
-    ){ 
- 
-        message.innerText= 
-            "Controller not ready."; 
- 
-        return; 
-    } 
- 
- 
-    try{ 
- 
-        await roomRef 
-        .child("remoteButton") 
-        .set({ 
- 
-            command:command, 
- 
-            player:selectedPlayer, 
- 
-            timestamp: 
-                firebase.database 
-                .ServerValue 
-                .TIMESTAMP 
- 
-        }); 
- 
- 
-    }catch(error){ 
- 
-        console.error(error); 
- 
-        message.innerText= 
-            "Command failed."; 
-    } 
-} 
- 
- 
-/* ========================================================= 
-   ABCD BUTTONS 
-========================================================= */ 
- 
-document 
-.querySelectorAll(".choice-btn") 
-.forEach(button=>{ 
- 
-    button.onclick= 
-    function(){ 
- 
-        const choice= 
-            button.dataset.choice; 
- 
-        sendCommand( 
-            choice 
-        ); 
- 
- 
-        /* 
-           Visual feedback only. 
-        */ 
- 
-        button.classList.add( 
-            "active" 
-        ); 
- 
- 
-        setTimeout(()=>{ 
- 
-            button.classList.remove( 
-                "active" 
-            ); 
- 
-        },150); 
- 
- 
-    }; 
- 
-}); 
- 
- 
-/* ========================================================= 
-   BUZZ 
-========================================================= */ 
- 
-let buzzLocked=false; 
- 
- 
-buzzBtn.onclick= 
-function(){ 
- 
-    if( 
-        !connected || 
-        !selectedPlayer 
-    ) 
-        return; 
- 
- 
-    /* 
-       Very short local debounce. 
-       Hindi ito round lock. 
-    */ 
- 
-    if(buzzLocked) 
-        return; 
- 
- 
-    buzzLocked=true; 
- 
- 
-    sendCommand( 
-        "TEAM"+ 
-        ( 
-            selectedPlayer==="player1" 
-                ? "1" 
-                : "2" 
-        ) 
-    ); 
- 
- 
-    buzzBtn.classList.add( 
-        "sent" 
-    ); 
- 
- 
-    buzzBtn.innerText= 
-        "BUZZED!"; 
- 
- 
-    setTimeout(()=>{ 
- 
-        buzzLocked=false; 
- 
-        buzzBtn.classList.remove( 
-            "sent" 
-        ); 
- 
-        buzzBtn.innerText= 
-            "BUZZ"; 
- 
-    },300); 
- 
-}; 
- 
- 
-/* ========================================================= 
-   KEYBOARD 
-   Z X C V = A B C D 
-========================================================= */ 
- 
-document.addEventListener( 
-    "keydown", 
-    function(event){ 
- 
-        if(!selectedPlayer) 
-            return; 
- 
- 
-        const key= 
-            event.key.toLowerCase(); 
- 
- 
-        const map={ 
- 
-            z:"A", 
-            x:"B", 
-            c:"C", 
-            v:"D" 
- 
-        }; 
- 
- 
-        if(map[key]){ 
- 
-            event.preventDefault(); 
- 
-            sendCommand( 
-                map[key] 
-            ); 
- 
- 
-            const button= 
-                document.querySelector( 
-                    `[data-choice="${map[key]}"]` 
-                ); 
- 
- 
-            if(button){ 
- 
-                button.classList.add( 
-                    "active" 
-                ); 
- 
- 
-                setTimeout(()=>{ 
- 
-                    button.classList.remove( 
-                        "active" 
-                    ); 
- 
-                },150); 
-            } 
-        } 
- 
- 
-        /* 
-           SPACE = BUZZ 
-        */ 
- 
-        if(event.code==="Space"){ 
- 
-            event.preventDefault(); 
- 
-            buzzBtn.click(); 
- 
-        } 
- 
-    } 
-); 
- 
- 
-/* ========================================================= 
-   KEEP FIREBASE CONNECTION 
-========================================================= */ 
- 
-db.ref(".info/connected") 
-.on( 
-    "value", 
-    snap=>{ 
- 
-        if(!snap.val()) 
-            return; 
- 
-        console.log( 
-            "Firebase connection active" 
-        ); 
-    } 
-); 
- 
- 
-/* ========================================================= 
-   PAGE CLOSE 
-========================================================= */ 
- 
-window.addEventListener( 
-    "beforeunload", 
-    function(){ 
- 
-        /* 
-           onDisconnect handles this 
-           on Firebase server side. 
-        */ 
- 
-        if( 
-            presenceRef && 
-            selectedPlayer 
-        ){ 
- 
-            presenceRef 
-            .onDisconnect() 
-            .remove(); 
-        } 
-    } 
-); 
- 
-</script> 
- 
-</body> 
+        "https://jess-santi-default-rtdb.firebaseio.com/",
+
+    projectId:
+        "jess-santi",
+
+    storageBucket:
+        "jess-santi.firebasestorage.app",
+
+    messagingSenderId:
+        "457562056307",
+
+    appId:
+        "1:457562056307:web:1be6c76bc8bdb5bd0aac06",
+
+    measurementId:
+        "G-SKL83F1C8B"
+
+};
+
+
+firebase.initializeApp(
+    firebaseConfig
+);
+
+
+const db =
+    firebase.database();
+
+
+
+/* =========================================================
+   VARIABLES
+========================================================= */
+
+let roomNumber = "";
+
+let roomRef = null;
+
+let selectedPlayer = "";
+
+let connected = false;
+
+let playerListener = null;
+
+let stateListener = null;
+
+let presenceRef = null;
+
+
+/* =========================================================
+   PHOTOSENSOR VARIABLES
+========================================================= */
+
+let lightSensor = null;
+
+let lightSensorStarted = false;
+
+let lightBuzzReady = true;
+
+let lastLightValue = null;
+
+
+/*
+   Kapag ang reading ay mas mababa
+   o equal dito, ituturing na
+   natakpan ang sensor.
+*/
+
+const LIGHT_THRESHOLD = 15;
+
+
+/*
+   Kailangang umabot ulit dito
+   bago maging ready ulit.
+
+   Ginagawa ito para hindi paulit-ulit
+   ang BUZZ habang nakatakip.
+*/
+
+const LIGHT_RESET = 30;
+
+
+/*
+   Minimum delay sa pagitan
+   ng automatic buzz.
+*/
+
+const LIGHT_BUZZ_COOLDOWN = 1200;
+
+let lastLightBuzzTime = 0;
+
+
+
+/* =========================================================
+   ELEMENTS
+========================================================= */
+
+const roomInput =
+    document.getElementById(
+        "roomInput"
+    );
+
+
+const connectBtn =
+    document.getElementById(
+        "connectBtn"
+    );
+
+
+const status =
+    document.getElementById(
+        "status"
+    );
+
+
+const roomSection =
+    document.getElementById(
+        "roomSection"
+    );
+
+
+const playerSection =
+    document.getElementById(
+        "playerSection"
+    );
+
+
+const controller =
+    document.getElementById(
+        "controller"
+    );
+
+
+const player1Btn =
+    document.getElementById(
+        "player1Btn"
+    );
+
+
+const player2Btn =
+    document.getElementById(
+        "player2Btn"
+    );
+
+
+const player1Status =
+    document.getElementById(
+        "player1Status"
+    );
+
+
+const player2Status =
+    document.getElementById(
+        "player2Status"
+    );
+
+
+const selectedPlayerText =
+    document.getElementById(
+        "selectedPlayer"
+    );
+
+
+const buzzBtn =
+    document.getElementById(
+        "buzzBtn"
+    );
+
+
+const message =
+    document.getElementById(
+        "message"
+    );
+
+
+const sensorStatus =
+    document.getElementById(
+        "sensorStatus"
+    );
+
+
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+function setStatus(
+    text,
+    type=""
+){
+
+    status.innerText =
+        text;
+
+
+    status.classList.remove(
+        "ok",
+        "error"
+    );
+
+
+    if(type)
+        status.classList.add(
+            type
+        );
+
+}
+
+
+
+/* =========================================================
+   CONNECT ROOM
+========================================================= */
+
+connectBtn.onclick =
+async function(){
+
+    const room =
+        roomInput.value.trim();
+
+
+    if(!room){
+
+        setStatus(
+            "Enter Room Number",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    connectBtn.disabled =
+        true;
+
+
+    setStatus(
+        "Checking Room..."
+    );
+
+
+    try{
+
+        const ref =
+            db.ref(
+                "rooms/"+room
+            );
+
+
+        const snap =
+            await ref.once(
+                "value"
+            );
+
+
+        if(!snap.exists()){
+
+            setStatus(
+                "❌ Room Not Found",
+                "error"
+            );
+
+            connectBtn.disabled =
+                false;
+
+            return;
+
+        }
+
+
+        roomNumber =
+            room;
+
+        roomRef =
+            ref;
+
+        connected =
+            true;
+
+
+        setStatus(
+            "✓ ROOM CONNECTED: "+room,
+            "ok"
+        );
+
+
+        roomInput.disabled =
+            true;
+
+
+        connectBtn.innerText =
+            "CONNECTED";
+
+
+        roomSection.style.display =
+            "none";
+
+
+        playerSection.style.display =
+            "block";
+
+
+        listenPlayers();
+
+        listenQuizState();
+
+
+    }
+    catch(error){
+
+        console.error(error);
+
+
+        setStatus(
+            "❌ Connection Error",
+            "error"
+        );
+
+
+        connectBtn.disabled =
+            false;
+
+    }
+
+};
+
+
+
+/* =========================================================
+   PLAYER AVAILABILITY
+========================================================= */
+
+function listenPlayers(){
+
+    if(!roomRef)
+        return;
+
+
+    if(playerListener){
+
+        roomRef
+        .child("controllers")
+        .off(
+            "value",
+            playerListener
+        );
+
+    }
+
+
+    playerListener =
+    function(snap){
+
+        const data =
+            snap.val() || {};
+
+
+        const player1 =
+            data.player1;
+
+
+        const player2 =
+            data.player2;
+
+
+        updatePlayerButton(
+            player1Btn,
+            player1Status,
+            player1,
+            "player1"
+        );
+
+
+        updatePlayerButton(
+            player2Btn,
+            player2Status,
+            player2,
+            "player2"
+        );
+
+
+        if(
+            selectedPlayer ===
+            "player1" &&
+            !player1
+        ){
+
+            releaseLocalController();
+
+        }
+
+
+        if(
+            selectedPlayer ===
+            "player2" &&
+            !player2
+        ){
+
+            releaseLocalController();
+
+        }
+
+    };
+
+
+    roomRef
+    .child("controllers")
+    .on(
+        "value",
+        playerListener
+    );
+
+}
+
+
+
+/* =========================================================
+   PLAYER BUTTON UI
+========================================================= */
+
+function updatePlayerButton(
+    button,
+    statusElement,
+    data,
+    player
+){
+
+    if(!data){
+
+        button.classList.remove(
+            "unavailable"
+        );
+
+        statusElement.innerText =
+            "Available";
+
+        return;
+
+    }
+
+
+    button.classList.add(
+        "unavailable"
+    );
+
+
+    statusElement.innerText =
+        "IN USE";
+
+}
+
+
+
+/* =========================================================
+   SELECT PLAYER
+========================================================= */
+
+player1Btn.onclick =
+function(){
+
+    selectPlayer(
+        "player1"
+    );
+
+};
+
+
+player2Btn.onclick =
+function(){
+
+    selectPlayer(
+        "player2"
+    );
+
+};
+
+
+
+/* =========================================================
+   CLAIM PLAYER
+========================================================= */
+
+async function selectPlayer(
+    player
+){
+
+    if(
+        !connected ||
+        !roomRef
+    )
+        return;
+
+
+    if(selectedPlayer)
+        return;
+
+
+    const playerRef =
+        roomRef
+        .child("controllers")
+        .child(player);
+
+
+    try{
+
+        const result =
+            await playerRef.transaction(
+                current => {
+
+                    if(current !== null)
+                        return;
+
+                    return {
+
+                        connected:true,
+
+                        at:
+                            firebase.database
+                            .ServerValue
+                            .TIMESTAMP
+
+                    };
+
+                }
+            );
+
+
+        if(!result.committed){
+
+            message.innerText =
+                "❌ Player already in use.";
+
+            return;
+
+        }
+
+
+        selectedPlayer =
+            player;
+
+
+        playerSection.style.display =
+            "none";
+
+
+        controller.style.display =
+            "flex";
+
+
+        if(
+            player ===
+            "player1"
+        ){
+
+            selectedPlayerText.innerText =
+                "🔵 PLAYER 1";
+
+        }
+        else{
+
+            selectedPlayerText.innerText =
+                "🔴 PLAYER 2";
+
+        }
+
+
+        message.innerText =
+            "Controller Ready";
+
+
+        startPresence();
+
+
+        /*
+           START PHOTOSENSOR
+        */
+
+        startPhotoSensor();
+
+    }
+    catch(error){
+
+        console.error(error);
+
+
+        message.innerText =
+            "Unable to select player.";
+
+    }
+
+}
+
+
+
+/* =========================================================
+   PRESENCE
+========================================================= */
+
+function startPresence(){
+
+    if(
+        !roomRef ||
+        !selectedPlayer
+    )
+        return;
+
+
+    presenceRef =
+        roomRef
+        .child("controllers")
+        .child(selectedPlayer);
+
+
+    presenceRef
+    .onDisconnect()
+    .remove();
+
+
+    presenceRef.update({
+
+        connected:true,
+
+        at:
+            firebase.database
+            .ServerValue
+            .TIMESTAMP
+
+    });
+
+}
+
+
+
+/* =========================================================
+   RELEASE LOCAL CONTROLLER
+========================================================= */
+
+function releaseLocalController(){
+
+    if(
+        presenceRef &&
+        selectedPlayer
+    ){
+
+        presenceRef
+        .remove()
+        .catch(()=>{});
+
+    }
+
+
+    stopPhotoSensor();
+
+
+    selectedPlayer =
+        "";
+
+
+    presenceRef =
+        null;
+
+
+    controller.style.display =
+        "none";
+
+
+    playerSection.style.display =
+        "block";
+
+
+    message.innerText =
+        "Player is no longer available.";
+
+}
+
+
+
+/* =========================================================
+   QUIZ STATE
+========================================================= */
+
+function listenQuizState(){
+
+    if(!roomRef)
+        return;
+
+
+    if(stateListener){
+
+        roomRef
+        .child("state")
+        .off(
+            "value",
+            stateListener
+        );
+
+    }
+
+
+    stateListener =
+    function(snap){
+
+        const state =
+            snap.val();
+
+
+        if(!state)
+            return;
+
+
+        if(
+            state.phase ===
+            "QUIZ_FINISHED"
+        ){
+
+            message.innerText =
+                "QUIZ FINISHED";
+
+            return;
+
+        }
+
+    };
+
+
+    roomRef
+    .child("state")
+    .on(
+        "value",
+        stateListener
+    );
+
+}
+
+
+
+/* =========================================================
+   SEND REMOTE COMMAND
+========================================================= */
+
+async function sendCommand(
+    command
+){
+
+    if(
+        !connected ||
+        !roomRef ||
+        !selectedPlayer
+    ){
+
+        message.innerText =
+            "Controller not ready.";
+
+        return;
+
+    }
+
+
+    try{
+
+        await roomRef
+        .child("remoteButton")
+        .set({
+
+            command:
+                command,
+
+            player:
+                selectedPlayer,
+
+            timestamp:
+                firebase.database
+                .ServerValue
+                .TIMESTAMP
+
+        });
+
+    }
+    catch(error){
+
+        console.error(error);
+
+        message.innerText =
+            "Command failed.";
+
+    }
+
+}
+
+
+
+/* =========================================================
+   ABCD BUTTONS
+========================================================= */
+
+document
+.querySelectorAll(".choice-btn")
+.forEach(button => {
+
+    button.onclick =
+    function(){
+
+        const choice =
+            button.dataset.choice;
+
+
+        sendCommand(
+            choice
+        );
+
+
+        button.classList.add(
+            "active"
+        );
+
+
+        setTimeout(
+            ()=>{
+                button.classList.remove(
+                    "active"
+                );
+            },
+            150
+        );
+
+    };
+
+});
+
+
+
+/* =========================================================
+   BUZZ LOCK
+========================================================= */
+
+let buzzLocked =
+    false;
+
+
+
+/* =========================================================
+   BUZZ FUNCTION
+========================================================= */
+
+function doBuzz(
+    source="manual"
+){
+
+    if(
+        !connected ||
+        !selectedPlayer
+    )
+        return;
+
+
+    /*
+       Local debounce.
+    */
+
+    if(buzzLocked)
+        return;
+
+
+    buzzLocked =
+        true;
+
+
+    const team =
+        selectedPlayer ===
+        "player1"
+            ? "TEAM1"
+            : "TEAM2";
+
+
+    sendCommand(
+        team
+    );
+
+
+    buzzBtn.classList.add(
+        "sent"
+    );
+
+
+    buzzBtn.innerText =
+        source === "sensor"
+            ? "📱 BUZZED!"
+            : "BUZZED!";
+
+
+    if(source === "sensor"){
+
+        message.innerText =
+            "📱 PHOTOSENSOR BUZZ!";
+
+    }
+    else{
+
+        message.innerText =
+            "BUZZ SENT";
+
+    }
+
+
+    setTimeout(
+        ()=>{
+
+            buzzLocked =
+                false;
+
+
+            buzzBtn.classList.remove(
+                "sent"
+            );
+
+
+            buzzBtn.innerText =
+                "BUZZ";
+
+        },
+        300
+    );
+
+}
+
+
+
+/* =========================================================
+   MANUAL BUZZ
+========================================================= */
+
+buzzBtn.onclick =
+function(){
+
+    doBuzz(
+        "manual"
+    );
+
+};
+
+
+
+/* =========================================================
+   PHOTOSENSOR
+========================================================= */
+
+function startPhotoSensor(){
+
+    if(!selectedPlayer)
+        return;
+
+
+    /*
+       Already started.
+    */
+
+    if(lightSensorStarted)
+        return;
+
+
+    sensorStatus.innerText =
+        "Photosensor: Checking...";
+
+
+    sensorStatus.className =
+        "sensor-status warning";
+
+
+    /*
+       Check browser support.
+    */
+
+    if(
+        !("AmbientLightSensor" in window)
+    ){
+
+        lightSensorStarted =
+            false;
+
+
+        sensorStatus.innerText =
+            "Photosensor: Not supported";
+
+
+        sensorStatus.className =
+            "sensor-status error";
+
+
+        message.innerText =
+            "Photosensor is not supported by this browser.";
+
+        return;
+
+    }
+
+
+    try{
+
+        lightSensor =
+            new AmbientLightSensor({
+                frequency:10
+            });
+
+
+        lightSensor.addEventListener(
+            "reading",
+            function(){
+
+                const lux =
+                    lightSensor.illuminance;
+
+
+                lastLightValue =
+                    lux;
+
+
+                /*
+                   Sensor ready.
+                */
+
+                sensorStatus.innerText =
+                    "☀️ Light: "+
+                    lux.toFixed(1)+
+                    " lux";
+
+
+                sensorStatus.className =
+                    "sensor-status ready";
+
+
+                /*
+                   =================================
+                   NATATAKPAN
+                   =================================
+                */
+
+                if(
+                    lux <=
+                    LIGHT_THRESHOLD
+                ){
+
+                    const now =
+                        Date.now();
+
+
+                    /*
+                       Prevent repeated buzz.
+                    */
+
+                    if(
+                        lightBuzzReady &&
+                        now -
+                        lastLightBuzzTime >=
+                        LIGHT_BUZZ_COOLDOWN
+                    ){
+
+                        lightBuzzReady =
+                            false;
+
+
+                        lastLightBuzzTime =
+                            now;
+
+
+                        /*
+                           AUTOMATIC BUZZ
+                        */
+
+                        doBuzz(
+                            "sensor"
+                        );
+
+                    }
+
+                }
+
+
+                /*
+                   =================================
+                   MALIWANAG NA ULIT
+                   =================================
+                */
+
+                if(
+                    lux >=
+                    LIGHT_RESET
+                ){
+
+                    lightBuzzReady =
+                        true;
+
+                }
+
+            }
+        );
+
+
+        lightSensor.addEventListener(
+            "error",
+            function(event){
+
+                console.error(
+                    "Ambient light sensor error:",
+                    event.error
+                );
+
+
+                sensorStatus.innerText =
+                    "Photosensor: Access denied";
+
+
+                sensorStatus.className =
+                    "sensor-status error";
+
+
+                message.innerText =
+                    "Photosensor permission denied.";
+
+            }
+        );
+
+
+        lightSensor.start();
+
+
+        lightSensorStarted =
+            true;
+
+
+        sensorStatus.innerText =
+            "☀️ Photosensor READY";
+
+
+        sensorStatus.className =
+            "sensor-status ready";
+
+
+    }
+    catch(error){
+
+        console.error(
+            "Photosensor error:",
+            error
+        );
+
+
+        lightSensorStarted =
+            false;
+
+
+        sensorStatus.innerText =
+            "Photosensor: Failed";
+
+
+        sensorStatus.className =
+            "sensor-status error";
+
+    }
+
+}
+
+
+
+/* =========================================================
+   STOP PHOTOSENSOR
+========================================================= */
+
+function stopPhotoSensor(){
+
+    if(lightSensor){
+
+        try{
+
+            lightSensor.stop();
+
+        }
+        catch(error){
+
+            console.error(error);
+
+        }
+
+    }
+
+
+    lightSensor =
+        null;
+
+
+    lightSensorStarted =
+        false;
+
+
+    lightBuzzReady =
+        true;
+
+
+    lastLightValue =
+        null;
+
+
+    sensorStatus.innerText =
+        "Photosensor: Off";
+
+
+    sensorStatus.className =
+        "sensor-status";
+
+}
+
+
+
+/* =========================================================
+   KEYBOARD
+   Z X C V = A B C D
+========================================================= */
+
+document.addEventListener(
+    "keydown",
+    function(event){
+
+        if(!selectedPlayer)
+            return;
+
+
+        const key =
+            event.key.toLowerCase();
+
+
+        const map = {
+
+            z:"A",
+            x:"B",
+            c:"C",
+            v:"D"
+
+        };
+
+
+        if(map[key]){
+
+            event.preventDefault();
+
+
+            sendCommand(
+                map[key]
+            );
+
+
+            const button =
+                document.querySelector(
+                    `[data-choice="${map[key]}"]`
+                );
+
+
+            if(button){
+
+                button.classList.add(
+                    "active"
+                );
+
+
+                setTimeout(
+                    ()=>{
+                        button.classList.remove(
+                            "active"
+                        );
+                    },
+                    150
+                );
+
+            }
+
+        }
+
+
+        /*
+           SPACE = BUZZ
+        */
+
+        if(
+            event.code ===
+            "Space"
+        ){
+
+            event.preventDefault();
+
+            buzzBtn.click();
+
+        }
+
+    }
+);
+
+
+
+/* =========================================================
+   FIREBASE CONNECTION
+========================================================= */
+
+db.ref(".info/connected")
+.on(
+    "value",
+    snap => {
+
+        if(!snap.val())
+            return;
+
+
+        console.log(
+            "Firebase connection active"
+        );
+
+    }
+);
+
+
+
+/* =========================================================
+   PAGE CLOSE
+========================================================= */
+
+window.addEventListener(
+    "beforeunload",
+    function(){
+
+        if(
+            presenceRef &&
+            selectedPlayer
+        ){
+
+            presenceRef
+            .onDisconnect()
+            .remove();
+
+        }
+
+    }
+);
+
+</script>
+
+</body>
 </html>
